@@ -53,10 +53,15 @@ static void drawWall(SDL_Renderer* renderer, int x, double perpWallDist, int sid
     if (drawStart < 0) drawStart = 0;
     int drawEnd = lineHeight / 2 + SCREEN_HEIGHT / 2;
     if (drawEnd >= SCREEN_HEIGHT) drawEnd = SCREEN_HEIGHT - 1;
+	 SDL_SetRenderDrawColor(renderer, 100, 100, 255, 255);  // Light blue for ceiling
+	SDL_RenderDrawLine(renderer, x, 0, x, drawStart);
 
+    SDL_RenderDrawLine(renderer, x, 0, x, drawStart);
     SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
     if (side == 1) SDL_SetRenderDrawColor(renderer, 128, 128, 128, 255);
     SDL_RenderDrawLine(renderer, x, drawStart, x, drawEnd);
+    SDL_SetRenderDrawColor(renderer, 100, 100, 100, 255);  // Dark blue for floor
+	SDL_RenderDrawLine(renderer, x, drawEnd, x, SCREEN_HEIGHT - 1);
 }
 
 void render(SDLState* sdlState, RaycasterState* rcState) {

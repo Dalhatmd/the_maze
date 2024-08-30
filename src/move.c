@@ -1,4 +1,10 @@
 #include "ray.h"
+/** 
+ * handleInput - handles input 
+ *
+ * @event: SDL event 
+ * @state: state of the game struct
+ */
 void handleInput(SDL_Event *event, RaycasterState *state)
 {
 	if (event->type == SDL_KEYDOWN)
@@ -38,6 +44,12 @@ void handleInput(SDL_Event *event, RaycasterState *state)
 		}
 	}
 }
+/**
+ * updatePosition - handles the updated position
+ *
+ * @state: game state struct
+ * @deltaTime: delta time
+ */
 void updatePosition(RaycasterState *state, double deltaTime)
 {
 	double moveSpeed, rotSpeed, speedMultiplier;
