@@ -78,6 +78,7 @@ void render(SDLState* sdlState, RaycasterState* rcState) {
 
         drawWall(sdlState->renderer, x, perpWallDist, side);
     }
+    drawMiniMap(sdlState->renderer, rcState);
 
     SDL_RenderPresent(sdlState->renderer);
 }

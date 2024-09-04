@@ -34,16 +34,16 @@ int main(void)
 				running = 0;
 		handleInput(&event, rcState);
 		}
-	updatePosition(rcState, frameTime);
-	render(sdlState, rcState);
-	frameTime = SDL_GetTicks() - frameStart;
+		updatePosition(rcState, frameTime);
+		render(sdlState, rcState);
+		frameTime = SDL_GetTicks() - frameStart;
 
-	if (frameTime < FRAME_TARGET_TIME)
-	{
-		SDL_Delay((int)(FRAME_TARGET_TIME - frameTime));
-	}
-	deltaTime = (SDL_GetTicks() - frameStart) / 1000.0;
-	printf("FPS: %f\n", 1.0 / deltaTime);
+		if (frameTime < FRAME_TARGET_TIME)
+		{
+			SDL_Delay((int)(FRAME_TARGET_TIME - frameTime));
+		}
+		deltaTime = (SDL_GetTicks() - frameStart) / 1000.0;
+//		printf("FPS: %f\n", 1.0 / deltaTime);
 	}
 
 	cleanupRaycaster(rcState);

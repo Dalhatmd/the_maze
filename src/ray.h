@@ -6,6 +6,8 @@
 #include <time.h>
 #include <stdio.h>
 
+#define MINIMAP_SIZE (MAP_WIDTH * MINIMAP_SCALE)
+#define MINIMAP_SCALE 5
 #define SCREEN_WIDTH 640
 #define SCREEN_HEIGHT 480
 #define MAP_WIDTH 21
@@ -36,6 +38,6 @@ void cleanupRaycaster(RaycasterState* state);
 void render(SDLState* sdlState, RaycasterState* rcState);
 void handleInput(SDL_Event *event, RaycasterState *state);
 void updatePosition(RaycasterState *state, double deltaTime);
-
+void drawMiniMap(SDL_Renderer *renderer, RaycasterState *state);
 #endif // RAYCASTER_H
 
