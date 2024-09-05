@@ -5,7 +5,11 @@
 #include <stdbool.h>
 #include <time.h>
 #include <stdio.h>
+#include <SDL2/SDL_image.h>
 
+#define NUM_TEXTURES 8
+#define TEXWIDTH 64
+#define TEXHEIGHT 64
 #define MINIMAP_SIZE (MAP_WIDTH * MINIMAP_SCALE)
 #define MINIMAP_SCALE 5
 #define SCREEN_WIDTH 640
@@ -26,11 +30,13 @@ typedef struct {
 	bool strafeLeft, strafeRight;
 	bool rotateLeft, rotateRight;
 	bool toggleMap;
+	 int textures[9][TEXWIDTH * TEXHEIGHT];
 } RaycasterState;
 
 typedef struct {
     SDL_Window* window;
     SDL_Renderer* renderer;
+   
 } SDLState;
 
 SDLState* initSDL(void);
@@ -41,5 +47,6 @@ void render(SDLState* sdlState, RaycasterState* rcState);
 void handleInput(SDL_Event *event, RaycasterState *state);
 void updatePosition(RaycasterState *state, double deltaTime);
 void drawMiniMap(SDL_Renderer *renderer, RaycasterState *state);
+void textures_init(RaycasterState *rcState);
 #endif // RAYCASTER_H
 

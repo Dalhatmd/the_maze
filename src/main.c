@@ -2,6 +2,11 @@
 #include <time.h>
 #include <stdio.h>
 #include "ray.h"
+/**
+ * main - Entry point
+ *
+ * Return: Always 0
+ */
 int main(void)
 {
 	SDLState* sdlState = initSDL();
@@ -18,6 +23,7 @@ int main(void)
 		cleanupSDL(sdlState);
 		return 1;
 	}
+	textures_init(rcState);
 
 	int running = 1;
 	SDL_Event event;
