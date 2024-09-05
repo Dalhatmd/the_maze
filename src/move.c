@@ -18,10 +18,19 @@ void handleInput(SDL_Event *event, RaycasterState *state)
 			state->moveBackward = true;
 			break;
 		case SDLK_a:
-			state->rotateLeft = true;
+			state->strafeLeft = true;
 			break;
 		case SDLK_d:
+			state->strafeRight = true;
+			break;
+		case SDLK_LEFT:
+			state->rotateLeft = true;
+			break;
+		case SDLK_RIGHT:
 			state->rotateRight = true;
+			break;
+		case SDLK_m:
+			state->toggleMap = !state->toggleMap;
 			break;
 		}
 	}
@@ -36,9 +45,15 @@ void handleInput(SDL_Event *event, RaycasterState *state)
 			state->moveBackward = false;
 			break;
 		case SDLK_a:
-			state->rotateLeft = false;
+			state->strafeLeft = false;
 			break;
 		case SDLK_d:
+			state->strafeRight = false;
+			break;
+		case SDLK_LEFT:
+			state->rotateLeft = false;
+			break;
+		case SDLK_RIGHT:
 			state->rotateRight = false;
 			break;
 		}
@@ -89,5 +104,19 @@ void updatePosition(RaycasterState *state, double deltaTime)
 		double oldPlaneX = state->planeX;
 		state->planeX = state->planeX * cos(-rotSpeed) - state->planeY * sin(-rotSpeed);
 		state->planeY = oldPlaneX * sin(-rotSpeed) + state->planeY * cos(-rotSpeed);
+	}
+	if (state->strafeLeft)
+	{
+		if (state->map[(int)(state->posX - state->dirX * moveSpeed)][(int)state->posY] == 0)
+			state->posX -= state->dirY * moveSpeed;
+		if (state->map[(int)state->posX][(int)(state->posY + state->dirX * moveSpeed)] == 0)
+			state->posY += state->dirX * moveSpeed;
+	}
+	if (state->strafeRight)
+	{
+		if (state->map[(int)(state->posX + state->dirX * moveSpeed)][(int)state->posY] == 0)
+			state->posX += state->dirY * moveSpeed;
+		if (state->map[(int)state->posX][(int)(state->posY - state->dirX * moveSpeed)] == 0)
+			state->posY -= state->dirX * moveSpeed;
 	}
 }

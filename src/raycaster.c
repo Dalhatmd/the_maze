@@ -60,7 +60,7 @@ static void drawWall(SDL_Renderer* renderer, int x, double perpWallDist, int sid
     SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
     if (side == 1) SDL_SetRenderDrawColor(renderer, 128, 128, 128, 255);
     SDL_RenderDrawLine(renderer, x, drawStart, x, drawEnd);
-    SDL_SetRenderDrawColor(renderer, 100, 100, 100, 255);  // Dark blue for floor
+    SDL_SetRenderDrawColor(renderer, 100, 100, 100, 255);
 	SDL_RenderDrawLine(renderer, x, drawEnd, x, SCREEN_HEIGHT - 1);
 }
 
@@ -78,7 +78,8 @@ void render(SDLState* sdlState, RaycasterState* rcState) {
 
         drawWall(sdlState->renderer, x, perpWallDist, side);
     }
-    drawMiniMap(sdlState->renderer, rcState);
+    if (rcState->toggleMap)
+    	drawMiniMap(sdlState->renderer, rcState);
 
     SDL_RenderPresent(sdlState->renderer);
 }

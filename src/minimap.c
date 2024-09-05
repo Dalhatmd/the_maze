@@ -35,7 +35,6 @@ void drawMiniMap(SDL_Renderer *renderer, RaycasterState *state)
 	// Draw the player
 	int playerX = minimapX + (int)(state->posX * MINIMAP_SCALE);
 	int playerY = minimapY + (int)(state->posY * MINIMAP_SCALE);
-	printf("Player at (%d, %d)\n", playerX, playerY);
 	SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
 	SDL_Rect playerRect = {
 		playerX,

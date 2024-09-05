@@ -23,7 +23,9 @@ typedef struct {
     double dirX, dirY;
     double planeX, planeY;
 	bool moveForward, moveBackward;
+	bool strafeLeft, strafeRight;
 	bool rotateLeft, rotateRight;
+	bool toggleMap;
 } RaycasterState;
 
 typedef struct {
