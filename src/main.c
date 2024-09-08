@@ -9,6 +9,12 @@
  */
 int main(int argc, char *argv[])
 {
+	int running;
+	double deltaTime;
+	Uint32 frameStart, frameTime;
+	SDL_Event event;
+	(void)argc;
+
 	SDLState* sdlState = initSDL();
 	if (!sdlState)
 	{
@@ -25,10 +31,8 @@ int main(int argc, char *argv[])
 	}
 	textures_init(rcState);
 
-	int running = 1;
-	SDL_Event event;
-	Uint32 frameStart, frameTime;
-	double deltaTime = 0.0;
+	running = 1;
+	deltaTime = 0.0;
 
 	while (running)
 	{
@@ -49,7 +53,7 @@ int main(int argc, char *argv[])
 			SDL_Delay((int)(FRAME_TARGET_TIME - frameTime));
 		}
 		deltaTime = (SDL_GetTicks() - frameStart) / 1000.0;
-//		printf("FPS: %f\n", 1.0 / deltaTime);
+		printf("FPS: %f\n", 1.0 / deltaTime);
 	}
 
 	cleanupRaycaster(rcState);
