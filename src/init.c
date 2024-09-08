@@ -1,25 +1,27 @@
 #include "ray.h"
-SDLState* initSDL(void) {
-    SDLState* state = malloc(sizeof(SDLState));
-    if (!state) return NULL;
+/**
+ * initSDL - initializes SDL and creates a window and renderer
+ * Return: SDLState* - a pointer to the SDLState struct
+ */
+SDLState* initSDL(void)
+{
+	SDLState* state = malloc(sizeof(SDLState));
 
-    SDL_Init(SDL_INIT_VIDEO);
-    state->window = SDL_CreateWindow("Simple Raycaster", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
-    state->renderer = SDL_CreateRenderer(state->window, -1, SDL_RENDERER_ACCELERATED);
+	if (!state) return NULL;
+	SDL_Init(SDL_INIT_VIDEO);
+	state->window = SDL_CreateWindow("Simple Raycaster",
+			SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
+			SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
+	state->renderer = SDL_CreateRenderer(state->window, -1,
+			SDL_RENDERER_ACCELERATED);
 
     return state;
 }
-
-/*SDLState* initImage(void)
-{
-	IMG_Init(IMG_INIT_PNG);
-	SDLState* state = malloc(sizeof(SDLState));
-	if (!state) return NULL;
-	// load image(s) here
-	
-	return state;
-}*/
-
+/**
+ * cleanupSDL - frees the SDLState struct
+ * @state: SDLState* - a pointer to the SDLState struct
+ * Return: RaycasterState* - a pointer to the RaycasterState struct
+ */
 void cleanupSDL(SDLState* state) {
     if (state) {
         SDL_DestroyRenderer(state->renderer);
@@ -29,71 +31,12 @@ void cleanupSDL(SDLState* state) {
     }
 }
 
-RaycasterState* initRaycaster(void) {
-    RaycasterState* state = malloc(sizeof(RaycasterState));
-    if (!state) return NULL;
 
-  /*  int initialMap[MAP_WIDTH][MAP_HEIGHT] = {
-        {1, 1, 1, 1, 1, 1, 1, 1},
-        {1, 0, 0, 0, 0, 0, 0, 1},
-        {1, 0, 0, 0, 0, 0, 0, 1},
-        {1, 0, 0, 0, 0, 0, 0, 1},
-        {1, 0, 0, 0, 0, 0, 0, 1},
-        {1, 0, 0, 0, 0, 0, 0, 1},
-        {1, 0, 0, 0, 0, 0, 0, 1},
-        {1, 1, 1, 1, 1, 1, 1, 1}
-	
-    };*/
-/**    int initialMap[MAP_WIDTH][MAP_HEIGHT] = {
-    {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
-    {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1},
-    {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-    {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-    {1, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 1},
-    {1, 0, 0, 0, 0, 0, 0, 0, 0, 3, 0, 0,  0, 0, 0, 0, 0, 0, 0, 0, 1},
-    {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-    {1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 6, 0, 4, 0, 1},
-    {1, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 6, 4, 4, 0, 1},
-    {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7, 7, 7, 0, 0, 0, 0, 0, 0, 1},
-    {1, 0, 1, 0,0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 0, 0, 5, 0, 1, 0, 1},
-    {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-    {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8, 4, 0, 0, 0, 0, 0, 0, 1},
-    {1, 0, 0, 0, 1, 0, 0, 0, 7, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1},
-    {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-    {1, 0, 0, 0, 0, 6, 6, 6, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-    {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-    {1, 0, 0, 1, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-    {1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-    {1, 0, 0, 1, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-    {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}
-    };
-
-    for (int y = 0; y < MAP_HEIGHT; y++) {
-        for (int x = 0; x < MAP_WIDTH; x++) {
-            state->map[x][y] = initialMap[y][x];
-        }
-    }*/
-
-/**    state = parseMapFile(argv[1]);
-    if (!state)
-    {
-	    fprintf(stderr, "Failed to parse file\n"):
-	    return (1);
-    }
-    state->posX = 4.5;
-    state->posY = 4.5;
-    state->dirX = -1;
-    state->dirY = 0;
-    state->planeX = 0;
-    state->planeY = 0.66;
-    state->moveForward = false;
-    state->moveBackward = false;
-    state->rotateLeft = false;
-    state->rotateRight = false;
-
-    return state;
-}*/
-    }
-void cleanupRaycaster(RaycasterState* state) {
+/**
+ * cleanupRaycaster - frees the RaycasterState struct
+ * @state: RaycasterState* - a pointer to the RaycasterState struct
+ */
+void cleanupRaycaster(RaycasterState* state)
+{
     free(state);
 }
