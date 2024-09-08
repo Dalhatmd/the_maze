@@ -8,9 +8,10 @@ void drawMiniMap(SDL_Renderer *renderer, RaycasterState *state)
 {
 	int minimapX = SCREEN_WIDTH - MINIMAP_SIZE - 10;
 	int minimapY = 10;
+	int y, x;
 
 	// Draw the minimap
-	for (int y = 0; y < MAP_WIDTH; y++)
+	for (y = 0; y < MAP_WIDTH; y++)
 	{
 		for (int x = 0; x < MAP_WIDTH; x++)
 		{

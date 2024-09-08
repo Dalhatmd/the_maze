@@ -7,7 +7,7 @@
  *
  * Return: Always 0
  */
-int main(void)
+int main(int argc, char *argv[])
 {
 	SDLState* sdlState = initSDL();
 	if (!sdlState)
@@ -16,10 +16,10 @@ int main(void)
 		return 1;
 	}
 
-	RaycasterState* rcState = initRaycaster();
+	RaycasterState* rcState = parseMapFile(argv[1]);
 	if (!rcState)
 	{
-		fprintf(stderr, "Failed to initialize Raycaster\n");
+		fprintf(stderr, "Failed to parse map file\n");
 		cleanupSDL(sdlState);
 		return 1;
 	}

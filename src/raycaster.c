@@ -77,12 +77,22 @@ static void drawWall(SDL_Renderer* renderer, int x, double perpWallDist, int sid
 
     double step = 1.0 * TEXHEIGHT / lineHeight;
     double texPos = (drawStart - SCREEN_HEIGHT / 2 + lineHeight / 2) * step;
+    int texOffset = texX * TEXHEIGHT;
     for (int y = drawStart; y < drawEnd; y++) {
 	int texY = (int)texPos & (TEXHEIGHT - 1);
 	texPos += step;
-	int color = rcState->textures[texNum][TEXHEIGHT * texY + texX];
-	if (side == 1) color = (color >> 1) & 8355711;
-	SDL_SetRenderDrawColor(renderer, (color >> 16) & 0xFF, (color >> 8) & 0xFF, color & 0xFF, 255);
+	
+	Uint32 color = rcState->textures[texNum][texY * TEXWIDTH + texX];
+	Uint8 r = color & 0xFF;
+	Uint8 g = (color >> 8) & 0xFF;
+	Uint8 b = (color >> 16) & 0xFF;
+	if (side == 1)
+	{
+		r = (Uint8)(r * 0.7);
+		g = (Uint8)(g * 0.7);
+		b = (Uint8)(b * 0.7);
+	}
+	SDL_SetRenderDrawColor(renderer, r, g, b, 255);
 	SDL_RenderDrawPoint(renderer, x, y);
     }
   //  SDL_SetRenderDrawColor(renderer, 100, 100, 255, 255);

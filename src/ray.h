@@ -48,5 +48,6 @@ void handleInput(SDL_Event *event, RaycasterState *state);
 void updatePosition(RaycasterState *state, double deltaTime);
 void drawMiniMap(SDL_Renderer *renderer, RaycasterState *state);
 void textures_init(RaycasterState *rcState);
+RaycasterState* parseMapFile(const char *filename);
 #endif // RAYCASTER_H
 
