@@ -5,6 +5,10 @@
 
 RaycasterState* parseMapFile(const char *filename)
 {
+	char line[MAX_LINE_LENGTH];
+	char *c = line;
+	int i = 0;
+	int row = 0, max_width = 0, col;
 	FILE *file = fopen(filename, "r");
 	if (!file)
 	{
@@ -18,16 +22,13 @@ RaycasterState* parseMapFile(const char *filename)
 		fclose(file);
 		return NULL;
 	}
-	char line[MAX_LINE_LENGTH];
-	int row = 0;
-	int max_width = 0;
 
 	while (fgets(line, sizeof(line), file) && row < MAP_HEIGHT)
 	{
-		int col = 0;
-		for (char *c = line; *c != '\n' && *c != '\0' && col < MAP_WIDTH; c++)
+		col = 0;
+		for (i = 0; line[i] != '\n' && line[i] != '\0' && col < MAP_WIDTH; i++)
 		{
-			switch (*c)
+			switch (line[i])
 			{
 		case '0': state->map[col][row] = 0; break;
 		case '1': state->map[col][row] = 1; break;

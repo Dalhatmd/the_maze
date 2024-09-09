@@ -2,7 +2,10 @@
 
 void textures_init(RaycasterState *rcState)
 {
+	int i, x, y;
+	Uint32 pixel;
 	int imgFlags = IMG_INIT_PNG;
+
 	if (!(IMG_Init(imgFlags) & imgFlags))
 	{
 		printf("SDL_image could not initialize! SDL_image Error: %s\n", IMG_GetError());
@@ -20,7 +23,7 @@ void textures_init(RaycasterState *rcState)
 		"textures/colorstone.png"
 	};
 
-	for (int i = 0; i < NUM_TEXTURES; i++)
+	for (i = 0; i < NUM_TEXTURES; i++)
 	{
 		SDL_Surface *surface = IMG_Load(texture_files[i]);
 		if (surface == NULL)
@@ -40,11 +43,11 @@ void textures_init(RaycasterState *rcState)
 
 	SDL_LockSurface(formattedSureface);
 	Uint32 *pixels = (Uint32 *)formattedSureface->pixels;
-	for (int y = 0; y < TEXHEIGHT; y++)
+	for (y = 0; y < TEXHEIGHT; y++)
 	{
-		for (int x = 0; x < TEXWIDTH; x++)
+		for (x = 0; x < TEXWIDTH; x++)
 		{
-			Uint32 pixel = pixels[y * TEXWIDTH + x];
+			pixel = pixels[y * TEXWIDTH + x];
 			rcState->textures[i][y * TEXHEIGHT + x] = pixel;
 		}
 	}

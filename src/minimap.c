@@ -8,12 +8,12 @@ void drawMiniMap(SDL_Renderer *renderer, RaycasterState *state)
 {
 	int minimapX = SCREEN_WIDTH - MINIMAP_SIZE - 10;
 	int minimapY = 10;
-	int y, x;
+	int y, x, dirX, dirY;
 
 	// Draw the minimap
 	for (y = 0; y < MAP_WIDTH; y++)
 	{
-		for (int x = 0; x < MAP_WIDTH; x++)
+		for (x = 0; x < MAP_WIDTH; x++)
 		{
 			SDL_Rect rect = {
 				minimapX + x * MINIMAP_SCALE,
@@ -44,8 +44,8 @@ void drawMiniMap(SDL_Renderer *renderer, RaycasterState *state)
 		4
 	};
 	SDL_RenderFillRect(renderer, &playerRect);
-	int dirX = playerX + (int)(state->dirX * MINIMAP_SCALE);
-	int dirY = playerY + (int)(state->dirY * MINIMAP_SCALE);
+	dirX = playerX + (int)(state->dirX * MINIMAP_SCALE);
+	dirY = playerY + (int)(state->dirY * MINIMAP_SCALE);
 
 	SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);
 	SDL_RenderDrawLine(renderer, playerX, playerY, dirX, dirY);
