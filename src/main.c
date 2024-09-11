@@ -5,6 +5,8 @@
 /**
  * main - Entry point
  *
+ * @argc: number of command line arguments
+ * @argv: array of command line arguments
  * Return: Always 0
  */
 int main(int argc, char *argv[])
@@ -15,19 +17,21 @@ int main(int argc, char *argv[])
 	SDL_Event event;
 	(void)argc;
 
-	SDLState* sdlState = initSDL();
+	SDLState *sdlState = initSDL();
+
 	if (!sdlState)
 	{
 		fprintf(stderr, "Failed to initialize SDL\n");
-		return 1;
+		return (1);
 	}
 
-	RaycasterState* rcState = parseMapFile(argv[1]);
+	RaycasterState *rcState = parseMapFile(argv[1]);
+
 	if (!rcState)
 	{
 		fprintf(stderr, "Failed to parse map file\n");
 		cleanupSDL(sdlState);
-		return 1;
+		return (1);
 	}
 	textures_init(rcState);
 

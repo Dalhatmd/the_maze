@@ -96,6 +96,7 @@ void render(SDLState* sdlState, RaycasterState* rcState) {
 	double cameraX, rayDirX, rayDirY, perpWallDist;
     SDL_SetRenderDrawColor(sdlState->renderer, 0, 0, 0, 255);
     SDL_RenderClear(sdlState->renderer);
+    drawFloor(sdlState->renderer, rcState);
 
     for (x = 0; x < SCREEN_WIDTH; x++) {
 	    cameraX = 2 * x / (double)SCREEN_WIDTH - 1;

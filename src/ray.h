@@ -7,6 +7,8 @@
 #include <stdio.h>
 #include <SDL2/SDL_image.h>
 
+#define FLOOR_TEXTURE_SIZE 64
+#define FLOOR_MAGNIFICATION 8
 #define NUM_TEXTURES 8
 #define TEXWIDTH 64
 #define TEXHEIGHT 64
@@ -31,6 +33,7 @@ typedef struct {
 	bool rotateLeft, rotateRight;
 	bool toggleMap;
 	 int textures[9][TEXWIDTH * TEXHEIGHT];
+	 int floorTexture[FLOOR_TEXTURE_SIZE * FLOOR_TEXTURE_SIZE];
 } RaycasterState;
 
 typedef struct {
@@ -49,5 +52,6 @@ void updatePosition(RaycasterState *state, double deltaTime);
 void drawMiniMap(SDL_Renderer *renderer, RaycasterState *state);
 void textures_init(RaycasterState *rcState);
 RaycasterState* parseMapFile(const char *filename);
+void drawFloor(SDL_Renderer *renderer, RaycasterState *state);
 #endif // RAYCASTER_H
 

@@ -54,5 +54,31 @@ void textures_init(RaycasterState *rcState)
 	SDL_UnlockSurface(formattedSureface);
 	SDL_FreeSurface(formattedSureface);
 	}
+	const char *floor_texture = "textures/greystone.png";
+	SDL_Surface *floor_surface = IMG_Load(floor_texture);
+	if (floor_surface == NULL)
+	{
+		printf("Unable to load floor texture image %s! SDL_image Error: %s\n", floor_texture, IMG_GetError());
+		exit(1);
+	}
+	SDL_Surface *formatted_floor_surface = SDL_ConvertSurfaceFormat(floor_surface, SDL_PIXELFORMAT_ABGR8888, 0);
+	SDL_FreeSurface(floor_surface);
+	if (formatted_floor_surface == NULL)
+	{
+		printf("Unable to convert loaded surface to display format! SDL Error: %s\n", SDL_GetError());
+		exit(1);
+	}
+	SDL_LockSurface(formatted_floor_surface);
+	Uint32 *floorPixels = (Uint32 *)formatted_floor_surface->pixels;
+	for (y = 0; y < FLOOR_TEXTURE_SIZE; y++)
+	{
+		for (x = 0; x < TEXWIDTH; x++)
+		{
+			pixel = floorPixels[y * FLOOR_TEXTURE_SIZE + x];
+			rcState->floorTexture[y * FLOOR_TEXTURE_SIZE + x] = pixel;
+		}
+	}
+	SDL_UnlockSurface(formatted_floor_surface);
+	SDL_FreeSurface(formatted_floor_surface);
 	IMG_Quit();
 }
