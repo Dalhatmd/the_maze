@@ -80,5 +80,41 @@ void textures_init(RaycasterState *rcState)
 	}
 	SDL_UnlockSurface(formatted_floor_surface);
 	SDL_FreeSurface(formatted_floor_surface);
+
+	const char *ceiling_texture = "textures/wood.png";
+	SDL_Surface *ceiling_surface = IMG_Load(ceiling_texture);
+	if (ceiling_surface == NULL)
+	{
+		printf("Unable to load ceiling texture image %s! SDL_image Error: %s\n", ceiling_texture, IMG_GetError());
+		exit(1);
+	}
+
+	if (ceiling_surface->w != CEILING_TEXTURE_SIZE || ceiling_surface->h != CEILING_TEXTURE_SIZE)
+	{
+		printf("Ceiling texture must be %dx%d\n", CEILING_TEXTURE_SIZE, CEILING_TEXTURE_SIZE);
+		exit(1);
+	}
+	SDL_Surface *formatted_ceiling_surface = SDL_ConvertSurfaceFormat(ceiling_surface, SDL_PIXELFORMAT_ABGR8888, 0);
+	SDL_FreeSurface(ceiling_surface);
+
+	if (formatted_ceiling_surface == NULL)
+	{
+		printf("Unable to convert loaded surface to display format! SDL Error: %s\n", SDL_GetError());
+		exit(1);
+	}
+
+	SDL_LockSurface(formatted_ceiling_surface);
+	Uint32 *ceilingPixels = (Uint32 *)formatted_ceiling_surface->pixels;
+	for (y = 0; y < CEILING_TEXTURE_SIZE; y++)
+	{
+		for (x = 0; x < CEILING_TEXTURE_SIZE; x++)
+		{
+			pixel = ceilingPixels[y * CEILING_TEXTURE_SIZE + x];
+			rcState->ceilingTexture[y * CEILING_TEXTURE_SIZE + x] = pixel;
+		}
+	}
+	SDL_UnlockSurface(formatted_ceiling_surface);
+	SDL_FreeSurface(formatted_ceiling_surface);
+
 	IMG_Quit();
 }

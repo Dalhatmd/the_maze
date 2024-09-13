@@ -7,10 +7,14 @@
 #include <stdio.h>
 #include <SDL2/SDL_image.h>
 
+#define CEILING_TEXTURE_SIZE 64
+#define CEILING_MAGNIFICATION 8
 #define FLOOR_TEXTURE_SIZE 64
 #define FLOOR_MAGNIFICATION 8
 #define NUM_TEXTURES 8
 #define TEXWIDTH 64
+#define CEILING_TEXTURE_SIZE 64
+#define CEILING_MAGNIFICATION 8
 #define TEXHEIGHT 64
 #define MINIMAP_SIZE (MAP_WIDTH * MINIMAP_SCALE)
 #define MINIMAP_SCALE 5
@@ -34,6 +38,7 @@ typedef struct {
 	bool toggleMap;
 	 int textures[9][TEXWIDTH * TEXHEIGHT];
 	 int floorTexture[FLOOR_TEXTURE_SIZE * FLOOR_TEXTURE_SIZE];
+	 int ceilingTexture[CEILING_TEXTURE_SIZE * CEILING_TEXTURE_SIZE];
 } RaycasterState;
 
 typedef struct {
@@ -53,5 +58,6 @@ void drawMiniMap(SDL_Renderer *renderer, RaycasterState *state);
 void textures_init(RaycasterState *rcState);
 RaycasterState* parseMapFile(const char *filename);
 void drawFloor(SDL_Renderer *renderer, RaycasterState *state);
+void drawCeiling(SDL_Renderer *renderer, RaycasterState *state);
 #endif // RAYCASTER_H
 
