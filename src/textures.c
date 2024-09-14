@@ -1,6 +1,6 @@
 #include "ray.h"
 
-void textures_init(RaycasterState *rcState)
+void textures_init(RaycasterState *rcState, SDL_Renderer *renderer)
 {
 	int i, x, y;
 	Uint32 pixel;
@@ -48,7 +48,7 @@ void textures_init(RaycasterState *rcState)
 		for (x = 0; x < TEXWIDTH; x++)
 		{
 			pixel = pixels[y * TEXWIDTH + x];
-			rcState->textures[i][y * TEXHEIGHT + x] = pixel;
+			rcState->texture[i][y * TEXHEIGHT + x] = pixel;
 		}
 	}
 	SDL_UnlockSurface(formattedSureface);
@@ -78,9 +78,6 @@ void textures_init(RaycasterState *rcState)
 			rcState->floorTexture[y * FLOOR_TEXTURE_SIZE + x] = pixel;
 		}
 	}
-	SDL_UnlockSurface(formatted_floor_surface);
-	SDL_FreeSurface(formatted_floor_surface);
-
 	const char *ceiling_texture = "textures/wood.png";
 	SDL_Surface *ceiling_surface = IMG_Load(ceiling_texture);
 	if (ceiling_surface == NULL)
@@ -113,8 +110,17 @@ void textures_init(RaycasterState *rcState)
 			rcState->ceilingTexture[y * CEILING_TEXTURE_SIZE + x] = pixel;
 		}
 	}
+	rcState->textures.floorTexture = SDL_CreateTextureFromSurface(renderer, formatted_floor_surface);
+	rcState->textures.ceilingTexture = SDL_CreateTextureFromSurface(renderer, formatted_ceiling_surface);
+
+	rcState->textures.renderTexture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_TARGET, SCREEN_WIDTH / RENDER_SCALE, SCREEN_HEIGHT / RENDER_SCALE);
+
 	SDL_UnlockSurface(formatted_ceiling_surface);
 	SDL_FreeSurface(formatted_ceiling_surface);
+	SDL_UnlockSurface(formatted_floor_surface);
+	SDL_FreeSurface(formatted_floor_surface);
+
+
 
 	IMG_Quit();
 }

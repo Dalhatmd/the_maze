@@ -1,21 +1,21 @@
 #ifndef RAYCASTER_H
 #define RAYCASTER_H
 
-#include <SDL2/SDL.h>
-#include <stdbool.h>
-#include <time.h>
 #include <stdio.h>
+#include <stddef.h>
+#include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
+#include <time.h>
+#include <stdbool.h>
+#include <stddef.h>
 
 #define CEILING_TEXTURE_SIZE 64
-#define CEILING_MAGNIFICATION 8
 #define FLOOR_TEXTURE_SIZE 64
-#define FLOOR_MAGNIFICATION 8
 #define NUM_TEXTURES 8
-#define TEXWIDTH 64
-#define CEILING_TEXTURE_SIZE 64
 #define CEILING_MAGNIFICATION 8
+#define FLOOR_MAGNIFICATION 8
 #define TEXHEIGHT 64
+#define TEXWIDTH 64
 #define MINIMAP_SIZE (MAP_WIDTH * MINIMAP_SCALE)
 #define MINIMAP_SCALE 5
 #define SCREEN_WIDTH 640
@@ -26,6 +26,15 @@
 #define FRAME_TARGET_TIME 1000 / FPS
 #define MOVE_SPEED  0.5
 #define ROTATE_SPEED  0.5
+#define RENDER_SCALE 2
+
+typedef struct 
+{
+	SDL_Texture *floorTexture;
+	SDL_Texture *ceilingTexture;
+	SDL_Texture *renderTexture;
+} RenderTextures;
+
 
 typedef struct {
     int map[MAP_WIDTH][MAP_HEIGHT];
@@ -36,10 +45,12 @@ typedef struct {
 	bool strafeLeft, strafeRight;
 	bool rotateLeft, rotateRight;
 	bool toggleMap;
-	 int textures[9][TEXWIDTH * TEXHEIGHT];
+	 int texture[9][TEXWIDTH * TEXHEIGHT];
 	 int floorTexture[FLOOR_TEXTURE_SIZE * FLOOR_TEXTURE_SIZE];
 	 int ceilingTexture[CEILING_TEXTURE_SIZE * CEILING_TEXTURE_SIZE];
+	 RenderTextures textures;
 } RaycasterState;
+
 
 typedef struct {
     SDL_Window* window;
@@ -55,9 +66,12 @@ void render(SDLState* sdlState, RaycasterState* rcState);
 void handleInput(SDL_Event *event, RaycasterState *state);
 void updatePosition(RaycasterState *state, double deltaTime);
 void drawMiniMap(SDL_Renderer *renderer, RaycasterState *state);
-void textures_init(RaycasterState *rcState);
+void textures_init(RaycasterState *rcState, SDL_Renderer *renderer);
 RaycasterState* parseMapFile(const char *filename);
 void drawFloor(SDL_Renderer *renderer, RaycasterState *state);
 void drawCeiling(SDL_Renderer *renderer, RaycasterState *state);
+void renderFloorAndCeiling(SDL_Renderer *renderer, RaycasterState *rcState);
+SDL_Texture* createTextureFromFloorData(SDL_Renderer* renderer, float startX, float startY, float stepX, float stepY, int width, RaycasterState* rcState);
+SDL_Texture* createTextureFromCeilingData(SDL_Renderer* renderer, float startX, float startY, float stepX, float stepY, int width, RaycasterState* rcState);
 #endif // RAYCASTER_H
 
