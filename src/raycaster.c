@@ -6,7 +6,7 @@ static void calculateRayPosition(int x, RaycasterState* state, double* rayDirX, 
     *rayDirY = state->dirY + state->planeY * cameraX;
 }
 
-static void performDDA(RaycasterState* state, double rayDirX, double rayDirY, int* mapX, int* mapY, double *perpWallDist, int* side) {
+/*static void performDDA(RaycasterState* state, double rayDirX, double rayDirY, int* mapX, int* mapY, double *perpWallDist, int* side) {
     int stepX, stepY, hit = 0;
     double sideDistX, sideDistY;
     double deltaDistX = fabs(1 / rayDirX);
@@ -89,29 +89,103 @@ static void drawWall(SDL_Renderer* renderer, int x, double perpWallDist, int sid
 	SDL_SetRenderDrawColor(renderer, r, g, b, 255);
 	SDL_RenderDrawPoint(renderer, x, y);
     }
-}
+}*/
 
-void render(SDLState* sdlState, RaycasterState* rcState) {
-	int x, mapX, mapY, side;
-	double cameraX, rayDirX, rayDirY, perpWallDist;
+void render(SDLState* sdlState, RaycasterState* rcState)
+{
     SDL_SetRenderDrawColor(sdlState->renderer, 0, 0, 0, 255);
     SDL_RenderClear(sdlState->renderer);
-    drawCeiling(sdlState->renderer, rcState);
-    drawFloor(sdlState->renderer, rcState);
 
-    for (x = 0; x < SCREEN_WIDTH; x++) {
-	    cameraX = 2 * x / (double)SCREEN_WIDTH - 1;
-	rayDirX = rcState->dirX + rcState->planeX * cameraX;
-	rayDirY = rcState->dirY + rcState->planeY * cameraX;
+    // Render floor and ceiling
+    SDL_Rect floorRect = {0, SCREEN_HEIGHT / 2, SCREEN_WIDTH, SCREEN_HEIGHT / 2};
+    SDL_Rect ceilingRect = {0, 0, SCREEN_WIDTH, SCREEN_HEIGHT / 2};
+    SDL_RenderCopy(sdlState->renderer, rcState->floorTexture, NULL, &floorRect);
+    SDL_RenderCopy(sdlState->renderer, rcState->ceilingTexture, NULL, &ceilingRect);
 
-        calculateRayPosition(x, rcState, &rayDirX, &rayDirY);
+    for (int x = 0; x < SCREEN_WIDTH; x++)
+    {
+        double cameraX = 2 * x / (double)SCREEN_WIDTH - 1;
+        double rayDirX = rcState->dirX + rcState->planeX * cameraX;
+        double rayDirY = rcState->dirY + rcState->planeY * cameraX;
 
-        performDDA(rcState, rayDirX, rayDirY, &mapX, &mapY, &perpWallDist, &side);
+        int mapX = (int)rcState->posX;
+        int mapY = (int)rcState->posY;
 
-        drawWall(sdlState->renderer, x, perpWallDist, side, rcState, rayDirX, rayDirY, mapX, mapY);
+        double sideDistX, sideDistY;
+        double deltaDistX = fabs(1 / rayDirX);
+        double deltaDistY = fabs(1 / rayDirY);
+        double perpWallDist;
+
+        int stepX, stepY;
+        int hit = 0;
+        int side;
+
+        if (rayDirX < 0)
+        {
+            stepX = -1;
+            sideDistX = (rcState->posX - mapX) * deltaDistX;
+        }
+        else
+        {
+            stepX = 1;
+            sideDistX = (mapX + 1.0 - rcState->posX) * deltaDistX;
+        }
+        if (rayDirY < 0)
+        {
+            stepY = -1;
+            sideDistY = (rcState->posY - mapY) * deltaDistY;
+        }
+        else
+        {
+            stepY = 1;
+            sideDistY = (mapY + 1.0 - rcState->posY) * deltaDistY;
+        }
+
+        while (hit == 0)
+        {
+            if (sideDistX < sideDistY)
+            {
+                sideDistX += deltaDistX;
+                mapX += stepX;
+                side = 0;
+            }
+            else
+            {
+                sideDistY += deltaDistY;
+                mapY += stepY;
+                side = 1;
+            }
+            if (rcState->map[mapX][mapY] > 0) hit = 1;
+        }
+
+        if (side == 0) perpWallDist = (mapX - rcState->posX + (1 - stepX) / 2) / rayDirX;
+        else           perpWallDist = (mapY - rcState->posY + (1 - stepY) / 2) / rayDirY;
+
+        int lineHeight = (int)(SCREEN_HEIGHT / perpWallDist);
+        int drawStart = -lineHeight / 2 + SCREEN_HEIGHT / 2;
+        if (drawStart < 0) drawStart = 0;
+        int drawEnd = lineHeight / 2 + SCREEN_HEIGHT / 2;
+        if (drawEnd >= SCREEN_HEIGHT) drawEnd = SCREEN_HEIGHT - 1;
+
+        int texNum = rcState->map[mapX][mapY] - 1;
+        if (texNum < 0 || texNum >= NUM_TEXTURES) texNum = 0;
+
+        double wallX;
+        if (side == 0) wallX = rcState->posY + perpWallDist * rayDirY;
+        else           wallX = rcState->posX + perpWallDist * rayDirX;
+        wallX -= floor(wallX);
+
+        int texX = (int)(wallX * TEXWIDTH);
+        if (side == 0 && rayDirX > 0) texX = TEXWIDTH - texX - 1;
+        if (side == 1 && rayDirY < 0) texX = TEXWIDTH - texX - 1;
+
+        SDL_Rect srcRect = {texX, 0, 1, TEXHEIGHT};
+        SDL_Rect destRect = {x, drawStart, 1, drawEnd - drawStart};
+        SDL_RenderCopy(sdlState->renderer, rcState->wallTextures[texNum], &srcRect, &destRect);
     }
+
     if (rcState->toggleMap)
-    	drawMiniMap(sdlState->renderer, rcState);
+        drawMiniMap(sdlState->renderer, rcState);
 
     SDL_RenderPresent(sdlState->renderer);
 }

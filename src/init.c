@@ -43,3 +43,15 @@ void cleanupRaycaster(RaycasterState *state)
 {
 	free(state);
 }
+
+void cleanupTextures(RaycasterState *state)
+{
+	int i;
+
+	for (i = 0; i < NUM_TEXTURES; i++)
+	{
+		SDL_DestroyTexture(state->wallTextures[i]);
+	}
+	SDL_DestroyTexture(state->floorTexture);
+	SDL_DestroyTexture(state->ceilingTexture);
+}

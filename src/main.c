@@ -33,7 +33,7 @@ int main(int argc, char *argv[])
 		cleanupSDL(sdlState);
 		return (1);
 	}
-	textures_init(rcState);
+	textures_init(rcState, sdlState->renderer);
 
 	running = 1;
 	deltaTime = 0.0;
@@ -59,7 +59,7 @@ int main(int argc, char *argv[])
 		deltaTime = (SDL_GetTicks() - frameStart) / 1000.0;
 		printf("FPS: %f\n", 1.0 / deltaTime);
 	}
-
+	cleanupTextures(rcState);
 	cleanupRaycaster(rcState);
 	cleanupSDL(sdlState);
 	return (0);

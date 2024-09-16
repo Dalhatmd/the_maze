@@ -36,9 +36,12 @@ typedef struct {
 	bool strafeLeft, strafeRight;
 	bool rotateLeft, rotateRight;
 	bool toggleMap;
-	 int textures[9][TEXWIDTH * TEXHEIGHT];
-	 int floorTexture[FLOOR_TEXTURE_SIZE * FLOOR_TEXTURE_SIZE];
-	 int ceilingTexture[CEILING_TEXTURE_SIZE * CEILING_TEXTURE_SIZE];
+	// int textures[9][TEXWIDTH * TEXHEIGHT];
+	// int floorTexture[FLOOR_TEXTURE_SIZE * FLOOR_TEXTURE_SIZE];
+	// int ceilingTexture[CEILING_TEXTURE_SIZE * CEILING_TEXTURE_SIZE];
+	SDL_Texture *wallTextures[NUM_TEXTURES];
+	SDL_Texture *floorTexture;
+	SDL_Texture *ceilingTexture;
 } RaycasterState;
 
 typedef struct {
@@ -55,9 +58,10 @@ void render(SDLState* sdlState, RaycasterState* rcState);
 void handleInput(SDL_Event *event, RaycasterState *state);
 void updatePosition(RaycasterState *state, double deltaTime);
 void drawMiniMap(SDL_Renderer *renderer, RaycasterState *state);
-void textures_init(RaycasterState *rcState);
+void textures_init(RaycasterState *rcState, SDL_Renderer *renderer);
 RaycasterState* parseMapFile(const char *filename);
 void drawFloor(SDL_Renderer *renderer, RaycasterState *state);
 void drawCeiling(SDL_Renderer *renderer, RaycasterState *state);
+void cleanupTextures(RaycasterState *state);
 #endif // RAYCASTER_H
 
