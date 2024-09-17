@@ -18,6 +18,8 @@ To run the game, you need to have GCC and SDL2 installed on your system. Follow 
 
 Clone the repository or download the source files.
 
+    git clone https://github.com/Dalhatmd/the_maze.git
+
 Open a terminal and navigate to the src directory.
 
 Compile the game with the following command:
