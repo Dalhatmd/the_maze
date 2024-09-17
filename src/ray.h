@@ -96,7 +96,7 @@ typedef struct {
 } SDLState;
 
 
-
+static void drawWallToBuffer(int x, double perpWallDist, int side, RaycasterState *rcState, double rayDirX, double rayDirY, int mapX, int mapY);
 void initEnemy(RaycasterState *state);
 void renderEnemy(SDL_Renderer *renderer, RaycasterState *state);
 SDLState* initSDL(void);

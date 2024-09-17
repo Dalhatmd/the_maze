@@ -1,157 +1,132 @@
 #include "ray.h"
-/**
- * calculateRayPosition - Calculate the direction of the ray
- * @x: The x position of the ray
- * @state: The state of the raycaster
- * @rayDirX: The x direction of the ray
- * @rayDirY: The y direction of the ray
- */
+// Use a pixel buffer to store color values
 static void calculateRayPosition(int x, RaycasterState* state, double* rayDirX, double* rayDirY) {
-	double cameraX = 2 * x / (double)SCREEN_WIDTH - 1;
-	*rayDirX = state->dirX + state->planeX * cameraX;
-	*rayDirY = state->dirY + state->planeY * cameraX;
+    double cameraX = 2 * x / (double)SCREEN_WIDTH - 1;
+    *rayDirX = state->dirX + state->planeX * cameraX;
+    *rayDirY = state->dirY + state->planeY * cameraX;
 }
-/**
- * performDDA - Perform the DDA algorithm to calculate the distance to the wall
- * @state: The state of the raycaster
- * @rayDirX: The x direction of the ray
- * @rayDirY: The y direction of the ray
- * @mapX: The x position of the map
- * @mapY: The y position of the map
- * @perpWallDist: The distance to the wall
- * @side: The side of the wall
- */
+
+
+Uint32 pixelBuffer[SCREEN_WIDTH * SCREEN_HEIGHT];
 static void performDDA(RaycasterState* state, double rayDirX, double rayDirY, int* mapX, int* mapY, double *perpWallDist, int* side) {
-	int stepX, stepY, hit = 0;
-	double sideDistX, sideDistY;
-	double deltaDistX = fabs(1 / rayDirX);
-	double deltaDistY = fabs(1 / rayDirY);
+    int stepX, stepY, hit = 0;
+    double sideDistX, sideDistY;
+    double deltaDistX = fabs(1 / rayDirX);
+    double deltaDistY = fabs(1 / rayDirY);
 
-	*mapX = (int)state->posX;
-	*mapY = (int)state->posY;
+    *mapX = (int)state->posX;
+    *mapY = (int)state->posY;
 
-	if (rayDirX < 0) {
-		stepX = -1;
-		sideDistX = (state->posX - *mapX) * deltaDistX;
-	} else {
-		stepX = 1;
-		sideDistX = (*mapX + 1.0 - state->posX) * deltaDistX;
-	}
-	if (rayDirY < 0) {
-		stepY = -1;
-		sideDistY = (state->posY - *mapY) * deltaDistY;
-	} else {
-		stepY = 1;
-		sideDistY = (*mapY + 1.0 - state->posY) * deltaDistY;
-	}
+    stepX = rayDirX < 0 ? -1 : 1;
+    sideDistX = (rayDirX < 0) ? (state->posX - *mapX) * deltaDistX : (*mapX + 1.0 - state->posX) * deltaDistX;
 
-	while (hit == 0) {
-		if (sideDistX < sideDistY) {
-			sideDistX += deltaDistX;
-			*mapX += stepX;
-			*side = 0;
-		} else {
-			sideDistY += deltaDistY;
-			*mapY += stepY;
-			*side = 1;
-		}
-		if (state->map[*mapX][*mapY] > 0) hit = 1;
-	}
-	if (*side == 0) *perpWallDist = (*mapX - state->posX + (1 - stepX) / 2) / rayDirX;
-	else *perpWallDist = (*mapY - state->posY + (1 - stepY) / 2) / rayDirY;
+    stepY = rayDirY < 0 ? -1 : 1;
+    sideDistY = (rayDirY < 0) ? (state->posY - *mapY) * deltaDistY : (*mapY + 1.0 - state->posY) * deltaDistY;
 
+    while (hit == 0) {
+        if (sideDistX < sideDistY) {
+            sideDistX += deltaDistX;
+            *mapX += stepX;
+            *side = 0;
+        } else {
+            sideDistY += deltaDistY;
+            *mapY += stepY;
+            *side = 1;
+        }
+        if (state->map[*mapX][*mapY] > 0) hit = 1;
+    }
+
+    *perpWallDist = (*side == 0)
+        ? (*mapX - state->posX + (1 - stepX) / 2) / rayDirX
+        : (*mapY - state->posY + (1 - stepY) / 2) / rayDirY;
 }
 
 /**
- * drawWall - Draw the wall on the screen
- * @renderer: The renderer to draw to
- * @x: The x position of the wall
- * @perpWallDist: The distance to the wall
- * @side: The side of the wall
- * @rcState: The state of the raycaster
- * @rayDirX: The x direction of the ray
- * @rayDirY: The y direction of the ray
- * @mapX: The x position of the map
- * @mapY: The y position of the map
+ * Draws the walls by filling the pixel buffer instead of using SDL_RenderDrawPoint.
+ * @param rcState: The raycaster state
+ * @param x: The column of the screen being rendered
+ * @param perpWallDist: The perpendicular distance from the player to the wall
+ * @param side: The side of the wall hit (0 for x, 1 for y)
  */
-static void drawWall(SDL_Renderer* renderer, int x, double perpWallDist, int side, RaycasterState* rcState, double rayDirX, double rayDirY, int mapX, int mapY)
-{
-	int drawEnd, texNum, texX, texY, y; //texOffset;
-	double wallX, step, texPos;
-	Uint32 color;
-	Uint8 r, g, b;
-	int lineHeight = (int)(SCREEN_HEIGHT / perpWallDist);
-	int drawStart = -lineHeight / 2 + SCREEN_HEIGHT / 2;
+static void drawWallToBuffer(int x, double perpWallDist, int side, RaycasterState* rcState, double rayDirX, double rayDirY, int mapX, int mapY) {
+    int lineHeight = (int)(SCREEN_HEIGHT / perpWallDist);
+    int drawStart = -lineHeight / 2 + SCREEN_HEIGHT / 2;
+    if (drawStart < 0) drawStart = 0;
+    int drawEnd = lineHeight / 2 + SCREEN_HEIGHT / 2;
+    if (drawEnd >= SCREEN_HEIGHT) drawEnd = SCREEN_HEIGHT - 1;
 
-	if (drawStart < 0) drawStart = 0;
-	drawEnd = lineHeight / 2 + SCREEN_HEIGHT / 2;
-	if (drawEnd >= SCREEN_HEIGHT) drawEnd = SCREEN_HEIGHT - 1;
+    int texNum = rcState->map[mapX][mapY] - 1;
+    if (texNum < 0 || texNum >= 8) texNum = 0;
 
-	texNum = rcState->map[mapX][mapY] - 1;
-	if (texNum < 0 || texNum >= 8) texNum = 0;
-	if (side == 0) wallX = rcState->posY + perpWallDist * rayDirY;
-	else		   wallX = rcState->posX + perpWallDist * rayDirX;
-	wallX -= floor(wallX);
+    double wallX = (side == 0) ? rcState->posY + perpWallDist * rayDirY : rcState->posX + perpWallDist * rayDirX;
+    wallX -= floor(wallX);
 
-	texX = (int)(wallX * (double)TEXWIDTH);
-	if (side == 0 && rayDirX > 0) texX = TEXWIDTH - texX - 1;
-	if (side == 1 && rayDirY < 0) texX = TEXWIDTH - texX - 1;
+    int texX = (int)(wallX * (double)TEXWIDTH);
+    if (side == 0 && rayDirX > 0) texX = TEXWIDTH - texX - 1;
+    if (side == 1 && rayDirY < 0) texX = TEXWIDTH - texX - 1;
 
-	step = 1.0 * TEXHEIGHT / lineHeight;
-	texPos = (drawStart - SCREEN_HEIGHT / 2 + lineHeight / 2) * step;
-//	texOffset = texX * TEXHEIGHT;
-	for (y = drawStart; y < drawEnd; y++) {
-	texY = (int)texPos & (TEXHEIGHT - 1);
-	texPos += step;
-	
-	color = rcState->textures[texNum][texY * TEXWIDTH + texX];
-	r = color & 0xFF;
-	g = (color >> 8) & 0xFF;
-	b = (color >> 16) & 0xFF;
-	if (side == 1)
-	{
-		r = (Uint8)(r * 0.7);
-		g = (Uint8)(g * 0.7);
-		b = (Uint8)(b * 0.7);
-	}
-	SDL_SetRenderDrawColor(renderer, r, g, b, 255);
-	SDL_RenderDrawPoint(renderer, x, y);
-	}
+    double step = 1.0 * TEXHEIGHT / lineHeight;
+    double texPos = (drawStart - SCREEN_HEIGHT / 2 + lineHeight / 2) * step;
+
+    for (int y = drawStart; y < drawEnd; y++) {
+        int texY = (int)texPos & (TEXHEIGHT - 1);
+        texPos += step;
+
+        Uint32 color = rcState->textures[texNum][texY * TEXWIDTH + texX];
+        Uint8 r = color & 0xFF;
+        Uint8 g = (color >> 8) & 0xFF;
+        Uint8 b = (color >> 16) & 0xFF;
+
+        if (side == 1) {
+            r = (Uint8)(r * 0.7);
+            g = (Uint8)(g * 0.7);
+            b = (Uint8)(b * 0.7);
+        }
+
+        // Store the pixel in the buffer (ARGB format)
+        pixelBuffer[y * SCREEN_WIDTH + x] = (255 << 24) | (r << 16) | (g << 8) | b;
+    }
 }
+
 /**
- * render - Renders the scene
- * @renderer: The renderer to draw to
- * @rcState: The state of the raycaster
+ * Renders the scene using a pixel buffer and SDL_Texture for faster rendering.
+ * @param sdlState: The SDL state
+ * @param rcState: The raycaster state
  */
 void render(SDLState* sdlState, RaycasterState* rcState) {
-	int x, mapX, mapY, side;
-	double cameraX, rayDirX, rayDirY, perpWallDist;
-	SDL_SetRenderDrawColor(sdlState->renderer, 0, 0, 0, 255);
-	SDL_RenderClear(sdlState->renderer);
+    // Clear pixel buffer
+    memset(pixelBuffer, 0, SCREEN_WIDTH * SCREEN_HEIGHT * sizeof(Uint32));
 
-	for (x = 0; x < SCREEN_WIDTH; x++)
-	{
-		cameraX = 2 * x / (double)SCREEN_WIDTH - 1;
-		rayDirX = rcState->dirX + rcState->planeX * cameraX;
-		rayDirY = rcState->dirY + rcState->planeY * cameraX;
+    for (int x = 0; x < SCREEN_WIDTH; x++) {
+        double rayDirX, rayDirY;
+        calculateRayPosition(x, rcState, &rayDirX, &rayDirY);
 
-		calculateRayPosition(x, rcState, &rayDirX, &rayDirY);
+        int mapX, mapY, side;
+        double perpWallDist;
+        performDDA(rcState, rayDirX, rayDirY, &mapX, &mapY, &perpWallDist, &side);
 
-		performDDA(rcState, rayDirX, rayDirY, &mapX, &mapY, &perpWallDist, &side);
+        drawWallToBuffer(x, perpWallDist, side, rcState, rayDirX, rayDirY, mapX, mapY);
 
-		drawWall(sdlState->renderer, x, perpWallDist, side, rcState, rayDirX, rayDirY, mapX, mapY);
+        rcState->zBuffer[x] = perpWallDist;
+    }
 
-		// Store the distance to the wall in the zBuffer
-		rcState->zBuffer[x] = perpWallDist;
-	}
+    // Create a texture for the pixel buffer
+    SDL_Texture* texture = SDL_CreateTexture(sdlState->renderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STREAMING, SCREEN_WIDTH, SCREEN_HEIGHT);
+    SDL_UpdateTexture(texture, NULL, pixelBuffer, SCREEN_WIDTH * sizeof(Uint32));
 
-	// After drawing walls, render the enemy
-	renderEnemy(sdlState->renderer, rcState);
-	handleShooting(rcState);
-	renderGun(sdlState->renderer, rcState);
+    // Render the texture
+    SDL_RenderClear(sdlState->renderer);
+    SDL_RenderCopy(sdlState->renderer, texture, NULL, NULL);
+    SDL_DestroyTexture(texture);
 
-	if (rcState->toggleMap)
-		drawMiniMap(sdlState->renderer, rcState);
+    // Render the enemy and gun after walls
+    renderEnemy(sdlState->renderer, rcState);
+    handleShooting(rcState);
+    renderGun(sdlState->renderer, rcState);
 
-	SDL_RenderPresent(sdlState->renderer);
+    if (rcState->toggleMap)
+        drawMiniMap(sdlState->renderer, rcState);
+
+    SDL_RenderPresent(sdlState->renderer);
 }
+

@@ -58,7 +58,7 @@ int main(int argc, char *argv[])
 			SDL_Delay((int)(FRAME_TARGET_TIME - frameTime));
 		}
 		deltaTime = (SDL_GetTicks() - frameStart) / 1000.0;
-		printf("FPS: %f\n", 1.0 / deltaTime);
+//		printf("FPS: %f\n", 1.0 / deltaTime);
 	}
 
 	cleanupRaycaster(rcState);
