@@ -1,5 +1,10 @@
 #include "ray.h"
-
+/**
+ * drawFloor - drawsfoor on the screen
+ * @renderer: renderer
+ * @rcstate: raycaster state
+ * Return: void
+ */
 void drawFloor(SDL_Renderer *renderer, RaycasterState *rcstate)
 {
 	int y, p, x;

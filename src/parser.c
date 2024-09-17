@@ -2,7 +2,12 @@
 #include <string.h>
 
 #define MAX_LINE_LENGTH 1024
-
+/**
+ * pasreMapFile - parse a map from a file and returns a raycaster state
+ * @filename: name of the map file
+ *
+ * Return: Raycaster state with map information
+ */
 RaycasterState* parseMapFile(const char *filename)
 {
 	char line[MAX_LINE_LENGTH];
