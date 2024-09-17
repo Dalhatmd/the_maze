@@ -11,7 +11,7 @@
 #define CEILING_MAGNIFICATION 8
 #define FLOOR_TEXTURE_SIZE 64
 #define FLOOR_MAGNIFICATION 8
-#define NUM_TEXTURES 8
+#define NUM_TEXTURES 9
 #define TEXWIDTH 64
 #define CEILING_TEXTURE_SIZE 64
 #define CEILING_MAGNIFICATION 8
@@ -27,6 +27,15 @@
 #define MOVE_SPEED  0.5
 #define ROTATE_SPEED  0.5
 
+typedef struct
+{
+	double posX, posY;
+	int textureId;
+	double dirX, dirY;
+	bool isAlive;
+} Enemy;
+
+
 typedef struct {
     int map[MAP_WIDTH][MAP_HEIGHT];
     double posX, posY;
@@ -39,6 +48,8 @@ typedef struct {
 	 int textures[9][TEXWIDTH * TEXHEIGHT];
 	 int floorTexture[FLOOR_TEXTURE_SIZE * FLOOR_TEXTURE_SIZE];
 	 int ceilingTexture[CEILING_TEXTURE_SIZE * CEILING_TEXTURE_SIZE];
+	 Enemy boss;
+	 double zBuffer[SCREEN_WIDTH];
 } RaycasterState;
 
 typedef struct {
@@ -46,6 +57,11 @@ typedef struct {
     SDL_Renderer* renderer;
    
 } SDLState;
+
+
+
+void initEnemy(RaycasterState *state);
+void renderEnemy(SDL_Renderer *renderer, RaycasterState *state);
 
 SDLState* initSDL(void);
 void cleanupSDL(SDLState* state);
