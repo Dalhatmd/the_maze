@@ -92,26 +92,33 @@ static void drawWall(SDL_Renderer* renderer, int x, double perpWallDist, int sid
 }
 
 void render(SDLState* sdlState, RaycasterState* rcState) {
-	int x, mapX, mapY, side;
-	double cameraX, rayDirX, rayDirY, perpWallDist;
+    int x, mapX, mapY, side;
+    double cameraX, rayDirX, rayDirY, perpWallDist;
     SDL_SetRenderDrawColor(sdlState->renderer, 0, 0, 0, 255);
     SDL_RenderClear(sdlState->renderer);
-    drawCeiling(sdlState->renderer, rcState);
-    drawFloor(sdlState->renderer, rcState);
 
     for (x = 0; x < SCREEN_WIDTH; x++) {
-	    cameraX = 2 * x / (double)SCREEN_WIDTH - 1;
-	rayDirX = rcState->dirX + rcState->planeX * cameraX;
-	rayDirY = rcState->dirY + rcState->planeY * cameraX;
+        cameraX = 2 * x / (double)SCREEN_WIDTH - 1;
+        rayDirX = rcState->dirX + rcState->planeX * cameraX;
+        rayDirY = rcState->dirY + rcState->planeY * cameraX;
 
         calculateRayPosition(x, rcState, &rayDirX, &rayDirY);
 
         performDDA(rcState, rayDirX, rayDirY, &mapX, &mapY, &perpWallDist, &side);
 
         drawWall(sdlState->renderer, x, perpWallDist, side, rcState, rayDirX, rayDirY, mapX, mapY);
+
+        // Store the distance to the wall in the zBuffer
+        rcState->zBuffer[x] = perpWallDist;
     }
+
+    // After drawing walls, render the enemy
+    renderEnemy(sdlState->renderer, rcState);
+    handleShooting(rcState);
+    renderGun(sdlState->renderer, rcState);
+
     if (rcState->toggleMap)
-    	drawMiniMap(sdlState->renderer, rcState);
+        drawMiniMap(sdlState->renderer, rcState);
 
     SDL_RenderPresent(sdlState->renderer);
 }

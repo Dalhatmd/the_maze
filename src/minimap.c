@@ -10,7 +10,7 @@ void drawMiniMap(SDL_Renderer *renderer, RaycasterState *state)
 	int minimapY = 10;
 	int y, x, dirX, dirY;
 
-	// Draw the minimap
+	/* Draw the minimap*/
 	for (y = 0; y < MAP_WIDTH; y++)
 	{
 		for (x = 0; x < MAP_WIDTH; x++)
@@ -33,7 +33,7 @@ void drawMiniMap(SDL_Renderer *renderer, RaycasterState *state)
 		}
 	}
 
-	// Draw the player
+	/* Draw the player */
 	int playerX = minimapX + (int)(state->posX * MINIMAP_SCALE);
 	int playerY = minimapY + (int)(state->posY * MINIMAP_SCALE);
 	SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);

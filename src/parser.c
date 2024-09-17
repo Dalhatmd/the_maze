@@ -45,6 +45,13 @@ RaycasterState* parseMapFile(const char *filename)
                     state->posY = row + 0.5;
                     state->map[col][row] = 0; // Assume player starts on empty space
                     break;
+		case 'B': // boss start position
+			  state->boss.posX = col + 0.5;
+			  state->boss.posY = row + 0.5;
+			  state->boss.isAlive = true;
+			  state->map[col][row] = 0; // Assume boss starts on empty space
+			  state->boss.textureId = 8;
+			break;
                 default:
                     fprintf(stderr, "Unknown character in map: %c\n", *c);
                     state->map[col][row] = 0; // Treat unknown as empty space
@@ -73,6 +80,8 @@ RaycasterState* parseMapFile(const char *filename)
         free(state);
         return NULL;
     }
+    state->boss.dirX = 1.0;
+    state->boss.dirY = 0.0;
 
     return state;
 }
