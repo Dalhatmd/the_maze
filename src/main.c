@@ -35,6 +35,7 @@ int main(int argc, char *argv[])
 	}
 	textures_init(rcState);
 	initEnemy(rcState);
+	initGuns(rcState);
 	running = 1;
 	deltaTime = 0.0;
 

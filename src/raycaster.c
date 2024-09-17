@@ -114,6 +114,8 @@ void render(SDLState* sdlState, RaycasterState* rcState) {
 
     // After drawing walls, render the enemy
     renderEnemy(sdlState->renderer, rcState);
+    handleShooting(rcState);
+    renderGun(sdlState->renderer, rcState);
 
     if (rcState->toggleMap)
         drawMiniMap(sdlState->renderer, rcState);
