@@ -7,7 +7,7 @@ static void calculateRayPosition(int x, RaycasterState* state, double* rayDirX, 
 }
 
 
-Uint32 pixelBuffer[SCREEN_WIDTH * SCREEN_HEIGHT];
+
 static void performDDA(RaycasterState* state, double rayDirX, double rayDirY, int* mapX, int* mapY, double *perpWallDist, int* side) {
     int stepX, stepY, hit = 0;
     double sideDistX, sideDistY;
@@ -97,6 +97,7 @@ void render(SDLState* sdlState, RaycasterState* rcState) {
     // Clear pixel buffer
     memset(pixelBuffer, 0, SCREEN_WIDTH * SCREEN_HEIGHT * sizeof(Uint32));
 
+    drawFloorAndCeiling(sdlState->renderer, rcState);
     for (int x = 0; x < SCREEN_WIDTH; x++) {
         double rayDirX, rayDirY;
         calculateRayPosition(x, rcState, &rayDirX, &rayDirY);
@@ -118,7 +119,6 @@ void render(SDLState* sdlState, RaycasterState* rcState) {
     SDL_RenderClear(sdlState->renderer);
     SDL_RenderCopy(sdlState->renderer, texture, NULL, NULL);
     SDL_DestroyTexture(texture);
-
     // Render the enemy and gun after walls
     renderEnemy(sdlState->renderer, rcState);
     handleShooting(rcState);

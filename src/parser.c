@@ -8,8 +8,9 @@
  *
  * Return: Raycaster state with map information
  */
-RaycasterState* parseMapFile(const char *filename)
+RaycasterState* parseMapFile(const char *filename, SDLState *sdlState)
 {
+	SDL_Renderer *renderer = sdlState->renderer;
 	char line[MAX_LINE_LENGTH];
 	char *c = line;
 	int i = 0;
@@ -77,6 +78,9 @@ RaycasterState* parseMapFile(const char *filename)
     state->moveBackward = false;
     state->rotateLeft = false;
     state->rotateRight = false;
+    // Initialize the floor and ceiling texture
+	state->floorCeilingTexture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STREAMING, SCREEN_WIDTH, SCREEN_HEIGHT);
+
 
     // Validate map dimensions
     if (row != MAP_HEIGHT || max_width != MAP_WIDTH) {

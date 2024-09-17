@@ -41,5 +41,6 @@ void cleanupSDL(SDLState *state)
  */
 void cleanupRaycaster(RaycasterState *state)
 {
+	SDL_DestroyTexture(state->floorCeilingTexture);
 	free(state);
 }

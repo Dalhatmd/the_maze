@@ -30,7 +30,7 @@
 #define MOVE_SPEED  0.5
 #define ROTATE_SPEED  0.5
 
-
+Uint32 pixelBuffer[SCREEN_WIDTH * SCREEN_HEIGHT];
 /**
  * Enemy - A struct that handles the enemy in the game
  *
@@ -81,6 +81,8 @@ typedef struct {
 	double zBuffer[SCREEN_WIDTH];
 	Gun guns[MAX_GUNS];
 	int currentGun;
+	Uint32 pixelBuffer[SCREEN_WIDTH * SCREEN_HEIGHT];
+	SDL_Texture *floorCeilingTexture;
 } RaycasterState;
 
 /**
@@ -95,7 +97,7 @@ typedef struct {
    
 } SDLState;
 
-
+void drawFloorAndCeiling(SDL_Renderer *renderer, RaycasterState *rcstate);
 static void drawWallToBuffer(int x, double perpWallDist, int side, RaycasterState *rcState, double rayDirX, double rayDirY, int mapX, int mapY);
 void initEnemy(RaycasterState *state);
 void renderEnemy(SDL_Renderer *renderer, RaycasterState *state);
@@ -108,7 +110,7 @@ void handleInput(SDL_Event *event, RaycasterState *state);
 void updatePosition(RaycasterState *state, double deltaTime);
 void drawMiniMap(SDL_Renderer *renderer, RaycasterState *state);
 void textures_init(RaycasterState *rcState);
-RaycasterState* parseMapFile(const char *filename);
+RaycasterState* parseMapFile(const char *filename, SDLState *sdlState);
 void drawFloor(SDL_Renderer *renderer, RaycasterState *state);
 void drawCeiling(SDL_Renderer *renderer, RaycasterState *state);
 void initGuns(RaycasterState *state);

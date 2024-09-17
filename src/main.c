@@ -25,7 +25,7 @@ int main(int argc, char *argv[])
 		return (1);
 	}
 
-	RaycasterState *rcState = parseMapFile(argv[1]);
+	RaycasterState *rcState = parseMapFile(argv[1], sdlState);
 
 	if (!rcState)
 	{
