@@ -29,6 +29,6 @@ bool isEmpty(PriorityQueue *pq);
 double heuristic(int x1, int y1, int x2, int y2);
 bool isValidCell(RaycasterState *state, int x, int y);
 void reconstructPath(Node *endNode, int path[MAX_PATH_LENGTH][2], int *pathLength);
-void enemyPathFinding(RaycasterState *state, Enemy* enemy, double playerX, double playerY);
-void updateEnemy(RaycasterState *state, Enemy *enemy);
+void enemyPathFinding(RaycasterState *state, Enemy enemy, double playerX, double playerY);
+void updateEnemy(RaycasterState *state);
 #endif /*"ENEMY_H" */

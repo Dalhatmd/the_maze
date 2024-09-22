@@ -61,15 +61,16 @@ Node pop(PriorityQueue *pq)
 	return root;
 }
 
-void enemyPathFinding(RaycasterState* state, Enemy* enemy, double playerX, double playerY) {
+void enemyPathFinding(RaycasterState* state, Enemy enemy, double playerX, double playerY)
+{
     PriorityQueue openSet;
     initPriorityQueue(&openSet, MAP_WIDTH * MAP_HEIGHT);
 
     bool closedSet[MAP_WIDTH][MAP_HEIGHT] = {false};
     Node nodes[MAP_WIDTH][MAP_HEIGHT] = {0};
 
-    int startX = (int)enemy->posX;
-    int startY = (int)enemy->posY;
+    int startX = (int)state->boss.posX;
+    int startY = (int)state->boss.posY;
     int endX = (int)playerX;
     int endY = (int)playerY;
 
@@ -95,15 +96,15 @@ void enemyPathFinding(RaycasterState* state, Enemy* enemy, double playerX, doubl
 
             if (pathLength > 1) {
                 /* Move enemy towards the next point in the path */
-                double moveX = path[pathLength - 2][0] - enemy->posX;
-                double moveY = path[pathLength - 2][1] - enemy->posY;
+                double moveX = path[pathLength - 2][0] - state->boss.posX;
+                double moveY = path[pathLength - 2][1] - state->boss.posY;
                 double length = sqrt(moveX * moveX + moveY * moveY);
 
                 if (length > 0) {
                     double moveSpeed = 0.05; // Adjust this value to change enemy speed
-                    enemy->posX += (moveX / length) * moveSpeed;
-                    enemy->posY += (moveY / length) * moveSpeed;
-		    printf("Enemy position: %f, %f\n", enemy->posX, enemy->posY);
+                    state->boss.posX += (moveX / length) * moveSpeed;
+                    state->boss.posY += (moveY / length) * moveSpeed;
+		    printf("Enemy position: %f, %f\n", state->boss.posX, state->boss.posY);
                 }
             }
             return;
@@ -134,7 +135,7 @@ void enemyPathFinding(RaycasterState* state, Enemy* enemy, double playerX, doubl
     }
 }
 
-void updateEnemy(RaycasterState *state, Enemy *enemy)
+void updateEnemy(RaycasterState *state)
 {
-	enemyPathFinding(state, enemy, state->posX, state->posY);
+	enemyPathFinding(state, state->boss, state->posX, state->posY);
 }

@@ -114,7 +114,6 @@ static void drawWallToBuffer(int x, double perpWallDist, int side, RaycasterStat
 void render(SDLState* sdlState, RaycasterState* rcState)
 {
 
-	Enemy enemy;
 	memset(rcState->pixelBuffer, 0, SCREEN_WIDTH * SCREEN_HEIGHT * sizeof(Uint32));
 
 	drawFloorAndCeiling(sdlState->renderer, rcState);
@@ -140,7 +139,7 @@ void render(SDLState* sdlState, RaycasterState* rcState)
 	SDL_RenderCopy(sdlState->renderer, texture, NULL, NULL);
 	SDL_DestroyTexture(texture);
 	// Render the enemy and gun after walls
-	renderEnemy(sdlState->renderer, rcState, &enemy);
+	renderEnemy(sdlState->renderer, rcState);
 	handleShooting(rcState);
 	renderGun(sdlState->renderer, rcState);
 

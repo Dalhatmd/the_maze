@@ -8,7 +8,7 @@
  *
  * Return: Raycaster state with map information
  */
-RaycasterState* parseMapFile(const char *filename, SDLState *sdlState, Enemy *enemy)
+RaycasterState* parseMapFile(const char *filename, SDLState *sdlState)
 {
 	SDL_Renderer *renderer = sdlState->renderer;
 	char line[MAX_LINE_LENGTH];
@@ -52,11 +52,11 @@ RaycasterState* parseMapFile(const char *filename, SDLState *sdlState, Enemy *en
 					state->map[col][row] = 0; // Assume player starts on empty space
 					break;
 		case 'E': // boss start position
-			  enemy->posX = col + 0.5;
-			  enemy->posY = row + 0.5;
-			  enemy->isAlive = true;
+			  state->boss.posX = col + 0.5;
+			  state->boss.posY = row + 0.5;
+			  state->boss.isAlive = true;
 			  state->map[col][row] = 0; // Assume boss starts on empty space
-			  enemy->textureId = 8;
+			  state->boss.textureId = 8;
 			break;
 				default:
 					fprintf(stderr, "Unknown character in map: %c\n", *c);
@@ -89,8 +89,8 @@ RaycasterState* parseMapFile(const char *filename, SDLState *sdlState, Enemy *en
 		free(state);
 		return NULL;
 	}
-	enemy->dirX = 1.0;
-	enemy->dirY = 0.0;
+	state->boss.dirX = 1.0;
+	state->boss.dirY = 0.0;
 
 	return state;
 }

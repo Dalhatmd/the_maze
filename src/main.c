@@ -30,8 +30,7 @@ int main(int argc, char *argv[])
         {
             case 0: // Start Game
             {
-                Enemy enemy;
-                RaycasterState *rcState = parseMapFile(argv[1], sdlState, &enemy);
+                RaycasterState *rcState = parseMapFile(argv[1], sdlState);
                 if (!rcState)
                 {
                     fprintf(stderr, "Failed to parse map file\n");
@@ -39,7 +38,7 @@ int main(int argc, char *argv[])
                     return 1;
                 }
 
-                initEnemy(rcState, &enemy);
+                initEnemy(rcState);
                 textures_init(rcState);
                 initGuns(rcState);
 
@@ -58,9 +57,9 @@ int main(int argc, char *argv[])
                         handleInput(&event, rcState);
                     }
                     updatePosition(rcState, frameTime);
-                    updateEnemy(rcState, &enemy); 
+                    updateEnemy(rcState); 
                     render(sdlState, rcState);
-                    renderEnemy(sdlState->renderer, rcState, &enemy);
+                    renderEnemy(sdlState->renderer, rcState);
 
                     frameTime = SDL_GetTicks() - frameStart;
                     if (frameTime < FRAME_TARGET_TIME)

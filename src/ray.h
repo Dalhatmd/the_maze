@@ -32,7 +32,6 @@
 #define FRAME_TARGET_TIME 1000 / FPS
 #define MOVE_SPEED  0.5
 #define ROTATE_SPEED  0.5
-#define BOSS_TEXTURE_INDEX(NUM_TEXTURES - 1)
 /**
  * Enemy - A struct that handles the enemy in the game
  *
@@ -111,8 +110,8 @@ int showMenu(SDL_Renderer *renderer);
 
 void drawFloorAndCeiling(SDL_Renderer *renderer, RaycasterState *rcstate);
 static void drawWallToBuffer(int x, double perpWallDist, int side, RaycasterState *rcState, double rayDirX, double rayDirY, int mapX, int mapY);
-void initEnemy(RaycasterState *state, Enemy *enemy);
-void renderEnemy(SDL_Renderer *renderer, RaycasterState *state, Enemy *enemy);
+void initEnemy(RaycasterState *state);
+void renderEnemy(SDL_Renderer *renderer, RaycasterState *state);
 SDLState* initSDL(void);
 void cleanupSDL(SDLState* state);
 RaycasterState* initRaycaster(void);
@@ -122,7 +121,7 @@ void handleInput(SDL_Event *event, RaycasterState *state);
 void updatePosition(RaycasterState *state, double deltaTime);
 void drawMiniMap(SDL_Renderer *renderer, RaycasterState *state);
 void textures_init(RaycasterState *rcState);
-RaycasterState* parseMapFile(const char *filename, SDLState *sdlState, Enemy *enemy);
+RaycasterState* parseMapFile(const char *filename, SDLState *sdlState);
 void drawFloor(SDL_Renderer *renderer, RaycasterState *state);
 void drawCeiling(SDL_Renderer *renderer, RaycasterState *state);
 void initGuns(RaycasterState *state);
