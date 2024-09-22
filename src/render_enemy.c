@@ -1,17 +1,19 @@
 #include "ray.h"
+#include "enemy.h"
 /**
  * renderEnemy - renders enemy on the screen
  * 
  * @renderer: SDL Renderer
  * @state: raycaster state
  */
-void renderEnemy(SDL_Renderer *renderer, RaycasterState *state)
+void renderEnemy(SDL_Renderer *renderer, RaycasterState *state, Enemy *enemy)
 {
-	if (!state->boss.isAlive) return;
 
+	if (!enemy->isAlive) return;
+	printf("Rendering enemy at position (%f %f) with textureId %d", enemy->posX, enemy->posY, enemy->textureId);
 	// Calculate enemy position relative to player
-	double spriteX = state->boss.posX - state->posX;
-	double spriteY = state->boss.posY - state->posY;
+	double spriteX = enemy->posX - state->posX;
+	double spriteY = enemy->posY - state->posY;
 
 	// Transform sprite with the inverse camera matrix
 	double invDet = 1.0 / (state->planeX * state->dirY - state->dirX * state->planeY);
@@ -43,7 +45,7 @@ void renderEnemy(SDL_Renderer *renderer, RaycasterState *state)
 			{
 				int d = (y) * 256 - SCREEN_HEIGHT * 128 + spriteHeight * 128;
 				int texY = ((d * TEXHEIGHT) / spriteHeight) / 256;
-				Uint32 color = state->textures[state->boss.textureId][TEXWIDTH * texY + texX];
+				Uint32 color = state->textures[enemy->textureId][TEXWIDTH * texY + texX];
 				if ((color & 0x00FFFFFF) != 0)
 				{
 					SDL_SetRenderDrawColor(renderer, (color >> 16) & 0xFF, (color >> 8) & 0xFF, color & 0xFF, 255);

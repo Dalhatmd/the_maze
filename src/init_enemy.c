@@ -4,7 +4,8 @@
  *
  * @state: RaycasterState
  */
-void initEnemy(RaycasterState *state)
+void initEnemy(RaycasterState *rcState, Enemy *enemy)
 {
-	state->boss.isAlive = true;
+	enemy->isAlive = true;
 }
+

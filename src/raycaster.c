@@ -102,7 +102,7 @@ static void drawWallToBuffer(int x, double perpWallDist, int side, RaycasterStat
 		}
 
 		// Store the pixel in the buffer (ARGB format)
-		pixelBuffer[y * SCREEN_WIDTH + x] = (255 << 24) | (r << 16) | (g << 8) | b;
+		rcState->pixelBuffer[y * SCREEN_WIDTH + x] = (255 << 24) | (r << 16) | (g << 8) | b;
 	}
 }
 
@@ -113,8 +113,9 @@ static void drawWallToBuffer(int x, double perpWallDist, int side, RaycasterStat
  */
 void render(SDLState* sdlState, RaycasterState* rcState)
 {
-	// Clear pixel buffer
-	memset(pixelBuffer, 0, SCREEN_WIDTH * SCREEN_HEIGHT * sizeof(Uint32));
+
+	Enemy enemy;
+	memset(rcState->pixelBuffer, 0, SCREEN_WIDTH * SCREEN_HEIGHT * sizeof(Uint32));
 
 	drawFloorAndCeiling(sdlState->renderer, rcState);
 	for (int x = 0; x < SCREEN_WIDTH; x++) {
@@ -132,14 +133,14 @@ void render(SDLState* sdlState, RaycasterState* rcState)
 
 	// Create a texture for the pixel buffer
 	SDL_Texture* texture = SDL_CreateTexture(sdlState->renderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STREAMING, SCREEN_WIDTH, SCREEN_HEIGHT);
-	SDL_UpdateTexture(texture, NULL, pixelBuffer, SCREEN_WIDTH * sizeof(Uint32));
+	SDL_UpdateTexture(texture, NULL, rcState->pixelBuffer, SCREEN_WIDTH * sizeof(Uint32));
 
 	// Render the texture
 	SDL_RenderClear(sdlState->renderer);
 	SDL_RenderCopy(sdlState->renderer, texture, NULL, NULL);
 	SDL_DestroyTexture(texture);
 	// Render the enemy and gun after walls
-	renderEnemy(sdlState->renderer, rcState);
+	renderEnemy(sdlState->renderer, rcState, &enemy);
 	handleShooting(rcState);
 	renderGun(sdlState->renderer, rcState);
 

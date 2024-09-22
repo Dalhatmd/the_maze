@@ -6,7 +6,10 @@
 #include <time.h>
 #include <stdio.h>
 #include <SDL2/SDL_image.h>
+#include <SDL2/SDL_ttf.h>
 
+#define MENU_ITEMS 3
+#define FONT_SIZE 24
 #define MAX_GUNS 3
 #define GUN_TEXTURE_HEIGHT 256
 #define GUN_TEXTURE_WIDTH 256
@@ -29,8 +32,7 @@
 #define FRAME_TARGET_TIME 1000 / FPS
 #define MOVE_SPEED  0.5
 #define ROTATE_SPEED  0.5
-
-Uint32 pixelBuffer[SCREEN_WIDTH * SCREEN_HEIGHT];
+#define BOSS_TEXTURE_INDEX(NUM_TEXTURES - 1)
 /**
  * Enemy - A struct that handles the enemy in the game
  *
@@ -47,6 +49,7 @@ typedef struct
 	int textureId;
 	double dirX, dirY;
 	bool isAlive;
+	int position[MAP_WIDTH][MAP_HEIGHT];
 } Enemy;
 
 /**
@@ -85,6 +88,12 @@ typedef struct {
 	SDL_Texture *floorCeilingTexture;
 } RaycasterState;
 
+typedef struct 
+{
+	char *text;
+	SDL_Texture *texture;
+	SDL_Rect rect;
+} MenuItem;
 /**
  * SDLState - Structs that handles the SDL instance
  *
@@ -97,10 +106,13 @@ typedef struct {
    
 } SDLState;
 
+void cleanUpMenu(MenuItem *menuItems, int count, TTF_Font *font);
+int showMenu(SDL_Renderer *renderer);
+
 void drawFloorAndCeiling(SDL_Renderer *renderer, RaycasterState *rcstate);
 static void drawWallToBuffer(int x, double perpWallDist, int side, RaycasterState *rcState, double rayDirX, double rayDirY, int mapX, int mapY);
-void initEnemy(RaycasterState *state);
-void renderEnemy(SDL_Renderer *renderer, RaycasterState *state);
+void initEnemy(RaycasterState *state, Enemy *enemy);
+void renderEnemy(SDL_Renderer *renderer, RaycasterState *state, Enemy *enemy);
 SDLState* initSDL(void);
 void cleanupSDL(SDLState* state);
 RaycasterState* initRaycaster(void);
@@ -110,11 +122,10 @@ void handleInput(SDL_Event *event, RaycasterState *state);
 void updatePosition(RaycasterState *state, double deltaTime);
 void drawMiniMap(SDL_Renderer *renderer, RaycasterState *state);
 void textures_init(RaycasterState *rcState);
-RaycasterState* parseMapFile(const char *filename, SDLState *sdlState);
+RaycasterState* parseMapFile(const char *filename, SDLState *sdlState, Enemy *enemy);
 void drawFloor(SDL_Renderer *renderer, RaycasterState *state);
 void drawCeiling(SDL_Renderer *renderer, RaycasterState *state);
 void initGuns(RaycasterState *state);
 void renderGun(SDL_Renderer *renderer, RaycasterState *state);
 void handleShooting(RaycasterState *state);
 #endif // RAYCASTER_H
-

@@ -72,7 +72,7 @@ void drawFloorAndCeiling(SDL_Renderer *renderer, RaycasterState *rcstate)
 			}
 
 			// Store the pixel in the pixel buffer
-			pixelBuffer[y * SCREEN_WIDTH + x] = (255 << 24) | (r << 16) | (g << 8) | b;
+			rcstate->pixelBuffer[y * SCREEN_WIDTH + x] = (255 << 24) | (r << 16) | (g << 8) | b;
 		}
 	}
 }

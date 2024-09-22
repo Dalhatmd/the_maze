@@ -8,7 +8,7 @@
  *
  * Return: Raycaster state with map information
  */
-RaycasterState* parseMapFile(const char *filename, SDLState *sdlState)
+RaycasterState* parseMapFile(const char *filename, SDLState *sdlState, Enemy *enemy)
 {
 	SDL_Renderer *renderer = sdlState->renderer;
 	char line[MAX_LINE_LENGTH];
@@ -41,56 +41,56 @@ RaycasterState* parseMapFile(const char *filename, SDLState *sdlState)
 
 		case '2': state->map[col][row] = 2; break;
 		case '3': state->map[col][row] = 3; break; // Special wall type 2
-                case '4': state->map[col][row] = 4; break; // Special wall type 3
-                case '5': state->map[col][row] = 5; break; // Special wall type 4
-                case '6': state->map[col][row] = 6; break; // Special wall type 5
-                case '7': state->map[col][row] = 7; break; // Special wall type 6
-                case '8': state->map[col][row] = 8; break; // Special wall type 7
-                case 'P': // Player start position
-                    state->posX = col + 0.5;
-                    state->posY = row + 0.5;
-                    state->map[col][row] = 0; // Assume player starts on empty space
-                    break;
-		case 'B': // boss start position
-			  state->boss.posX = col + 0.5;
-			  state->boss.posY = row + 0.5;
-			  state->boss.isAlive = true;
+				case '4': state->map[col][row] = 4; break; // Special wall type 3
+				case '5': state->map[col][row] = 5; break; // Special wall type 4
+				case '6': state->map[col][row] = 6; break; // Special wall type 5
+				case '7': state->map[col][row] = 7; break; // Special wall type 6
+				case '8': state->map[col][row] = 8; break; // Special wall type 7
+				case 'P': // Player start position
+					state->posX = col + 0.5;
+					state->posY = row + 0.5;
+					state->map[col][row] = 0; // Assume player starts on empty space
+					break;
+		case 'E': // boss start position
+			  enemy->posX = col + 0.5;
+			  enemy->posY = row + 0.5;
+			  enemy->isAlive = true;
 			  state->map[col][row] = 0; // Assume boss starts on empty space
-			  state->boss.textureId = 8;
+			  enemy->textureId = 8;
 			break;
-                default:
-                    fprintf(stderr, "Unknown character in map: %c\n", *c);
-                    state->map[col][row] = 0; // Treat unknown as empty space
-            }
-            col++;
-        }
-        if (col > max_width) max_width = col;
-        row++;
-    }
+				default:
+					fprintf(stderr, "Unknown character in map: %c\n", *c);
+					state->map[col][row] = 0; // Treat unknown as empty space
+			}
+			col++;
+		}
+		if (col > max_width) max_width = col;
+		row++;
+	}
 
-    fclose(file);
+	fclose(file);
 
-     state->dirX = -1;
-    state->dirY = 0;
-    state->planeX = 0;
-    state->planeY = 0.66;
-    state->moveForward = false;
-    state->moveBackward = false;
-    state->rotateLeft = false;
-    state->rotateRight = false;
-    // Initialize the floor and ceiling texture
+	state->dirX = -1;
+	state->dirY = 0;
+	state->planeX = 0;
+	state->planeY = 0.66;
+	state->moveForward = false;
+	state->moveBackward = false;
+	state->rotateLeft = false;
+	state->rotateRight = false;
+	// Initialize the floor and ceiling texture
 	state->floorCeilingTexture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STREAMING, SCREEN_WIDTH, SCREEN_HEIGHT);
 
 
-    // Validate map dimensions
-    if (row != MAP_HEIGHT || max_width != MAP_WIDTH) {
-        fprintf(stderr, "Invalid map dimensions. Expected %dx%d, got %dx%d\n", 
-                MAP_WIDTH, MAP_HEIGHT, max_width, row);
-        free(state);
-        return NULL;
-    }
-    state->boss.dirX = 1.0;
-    state->boss.dirY = 0.0;
+	// Validate map dimensions
+	if (row != MAP_HEIGHT || max_width != MAP_WIDTH) {
+		fprintf(stderr, "Invalid map dimensions. Expected %dx%d, got %dx%d\n", 
+				MAP_WIDTH, MAP_HEIGHT, max_width, row);
+		free(state);
+		return NULL;
+	}
+	enemy->dirX = 1.0;
+	enemy->dirY = 0.0;
 
-    return state;
+	return state;
 }

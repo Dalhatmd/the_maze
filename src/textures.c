@@ -30,7 +30,7 @@ void textures_init(RaycasterState *rcState)
 		if (surface == NULL)
 		{
 			printf("Unable to load texture image %s! SDL_image Error: %s\n", texture_files[i], IMG_GetError());
-			continue;
+			exit(1);
 		}
 	
 	SDL_Surface *formattedSureface = SDL_ConvertSurfaceFormat(surface, SDL_PIXELFORMAT_ABGR8888, 0);
