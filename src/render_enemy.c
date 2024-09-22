@@ -10,7 +10,7 @@ void renderEnemy(SDL_Renderer *renderer, RaycasterState *state)
 {
 
 	if (!state->boss.isAlive) return;
-	printf("Rendering enemy at position (%f %f) with textureId %d", state->boss.posX, state->boss.posY, state->boss.textureId);
+//	printf("Rendering enemy at position (%f %f) with textureId %d", state->boss.posX, state->boss.posY, state->boss.textureId);
 	// Calculate enemy position relative to player
 	double spriteX = state->boss.posX - state->posX;
 	double spriteY = state->boss.posY - state->posY;

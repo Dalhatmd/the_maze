@@ -32,13 +32,17 @@ void push(PriorityQueue *pq, Node node)
  */
 Node pop(PriorityQueue *pq)
 {
-	int i, minIndex, left, right;
+	if (pq == NULL || pq->size == 0) {
+        Node emptyNode = {0};
+        return emptyNode;
+    }
+	int i = 0, minIndex, left, right;
 
 	Node root = pq->nodes[0];
 	pq->nodes[0] = pq->nodes[pq->size - 1];
 	pq->size--;
 
-	while (true)
+	while (i < pq->size)
 	{
 		minIndex = i;
 		left = 2 * i + 1;
@@ -63,6 +67,25 @@ Node pop(PriorityQueue *pq)
 
 void enemyPathFinding(RaycasterState* state, Enemy enemy, double playerX, double playerY)
 {
+	 static int updateCounter = 0;
+    if (++updateCounter % 10 != 0) {
+        // Simple direct movement towards player when not updating full path
+        double dx = playerX - state->boss.posX;
+        double dy = playerY - state->boss.posY;
+        double length = sqrt(dx * dx + dy * dy);
+        if (length > 0) {
+            double moveSpeed = 0.05;
+            double newX = state->boss.posX + (dx / length) * moveSpeed;
+            double newY = state->boss.posY + (dy / length) * moveSpeed;
+            
+            // Simple collision detection
+            if (isValidCell(state, (int)newX, (int)newY)) {
+                state->boss.posX = newX;
+                state->boss.posY = newY;
+            }
+        }
+        return;
+    }
     PriorityQueue openSet;
     initPriorityQueue(&openSet, MAP_WIDTH * MAP_HEIGHT);
 
@@ -104,7 +127,7 @@ void enemyPathFinding(RaycasterState* state, Enemy enemy, double playerX, double
                     double moveSpeed = 0.05; // Adjust this value to change enemy speed
                     state->boss.posX += (moveX / length) * moveSpeed;
                     state->boss.posY += (moveY / length) * moveSpeed;
-		    printf("Enemy position: %f, %f\n", state->boss.posX, state->boss.posY);
+		   // printf("Enemy position: %f, %f\n", state->boss.posX, state->boss.posY);
                 }
             }
             return;
@@ -116,7 +139,8 @@ void enemyPathFinding(RaycasterState* state, Enemy enemy, double playerX, double
             int newY = current.y + dy[i];
 
             if (!isValidCell(state, newX, newY) || closedSet[newX][newY]) {
-                continue;
+		    state->boss.posX = newX;
+		    state->boss.posY = newY;
             }
 
             double tentativeG = nodes[current.x][current.y].g + 1.0;

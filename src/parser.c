@@ -21,14 +21,19 @@ RaycasterState* parseMapFile(const char *filename, SDLState *sdlState)
 		printf("Error: Could not open file %s\n", filename);
 		return NULL;
 	}
-	RaycasterState *state = malloc(sizeof(RaycasterState));
+	RaycasterState *state = calloc(1, sizeof(RaycasterState));
 	if (!state)
 	{
 		printf("Error: Could not allocate memory for RaycasterState\n");
 		fclose(file);
 		return NULL;
 	}
-
+	state->posX = -1;
+	state->posY = -1;
+	state->boss.posX = -1;
+	state->boss.posY = -1;
+	state->boss.isAlive = false;
+	state->boss.textureId = -1;
 	while (fgets(line, sizeof(line), file) && row < MAP_HEIGHT)
 	{
 		col = 0;
