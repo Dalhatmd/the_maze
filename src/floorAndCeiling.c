@@ -8,20 +8,20 @@
  * Description: All textures are stored in a pixel Buffer to boost performance
  * 		instead of using SDL_RenderCopy
  */
-void drawFloorAndCeiling(SDL_Renderer *renderer, RaycasterState *rcstate)
+void drawFloorAndCeiling(RaycasterState *rcstate)
 {
-	int y, p, x;
+	int y, p, x, isCeiling;
 	float rayDirX0, rayDirY0, rayDirX1, rayDirY1, posZ, rowDistance;
 	float floorStepX, floorStepY, floorX, floorY;
 	Uint8 r, g, b;
-	Uint32 color;
+//	Uint32 color;
 
 	posZ = 0.5 * SCREEN_HEIGHT;
 
 	for (y = 0; y < SCREEN_HEIGHT; y++)
 	{
-		int isCeiling = y < SCREEN_HEIGHT / 2;
-		int p = isCeiling ? SCREEN_HEIGHT / 2 - y : y - SCREEN_HEIGHT / 2;
+		isCeiling = y < SCREEN_HEIGHT / 2;
+		p = isCeiling ? SCREEN_HEIGHT / 2 - y : y - SCREEN_HEIGHT / 2;
 
 		// Set direction of the rays for floor/ceiling
 		rayDirX0 = rcstate->dirX - rcstate->planeX;

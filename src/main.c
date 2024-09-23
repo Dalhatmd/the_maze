@@ -12,76 +12,78 @@
  */
 int main(int argc, char *argv[])
 {
-    SDLState *sdlState = initSDL();
-    if (!sdlState)
-    {
-        fprintf(stderr, "Failed to initialize SDL\n");
-        return 1;
-    }
+	(void)argc;
+	SDLState *sdlState = initSDL();
+	if (!sdlState)
+	{
+		fprintf(stderr, "Failed to initialize SDL\n");
+		return 1;
+	}
 
-    int menuChoice;
-    bool gameRunning = true;
+	int menuChoice;
+	bool gameRunning = true;
 
-    while (gameRunning)
-    {
-        menuChoice = showMenu(sdlState->renderer);
+	while (gameRunning)
+	{
+		menuChoice = showMenu(sdlState->renderer);
 
-        switch (menuChoice)
-        {
-            case 0: // Start Game
-            {
-                RaycasterState *rcState = parseMapFile(argv[1], sdlState);
-                if (!rcState)
-                {
-                    fprintf(stderr, "Failed to parse map file\n");
-                    cleanupSDL(sdlState);
-                    return 1;
-                }
+		switch (menuChoice)
+		{
+			case 0: // Start Game
+			{
+				RaycasterState *rcState = parseMapFile(argv[1], sdlState);
+				if (!rcState)
+				{
+					fprintf(stderr, "Failed to parse map file\n");
+					cleanupSDL(sdlState);
+					return 1;
+				}
 
-                initEnemy(rcState);
-                textures_init(rcState);
-                initGuns(rcState);
+				initEnemy(rcState);
+				textures_init(rcState);
+//				initGuns(rcState);
 
-                int running = 1;
-                double deltaTime = 0.0;
-                Uint32 frameStart, frameTime;
-                SDL_Event event;
+				int running = 1;
 
-                while (running)
-                {
-                    frameStart = SDL_GetTicks();
-                    while (SDL_PollEvent(&event))
-                    {
-                        if (event.type == SDL_QUIT)
-                            running = 0;
-                        handleInput(&event, rcState);
-                    }
-                    updatePosition(rcState, frameTime);
-                    updateEnemy(rcState); 
-                    render(sdlState, rcState);
-                    renderEnemy(sdlState->renderer, rcState);
+				Uint32 frameStart, frameTime;
+				frameTime = 0;
+				SDL_Event event;
 
-                    frameTime = SDL_GetTicks() - frameStart;
-                    if (frameTime < FRAME_TARGET_TIME)
-                    {
-                        SDL_Delay((int)(FRAME_TARGET_TIME - frameTime));
-                    }
-                    deltaTime = (SDL_GetTicks() - frameStart) / 1000.0;
-                }
+				while (running)
+				{
+					frameStart = SDL_GetTicks();
+					while (SDL_PollEvent(&event))
+					{
+						if (event.type == SDL_QUIT)
+							running = 0;
+						handleInput(&event, rcState);
+					}
+					updatePosition(rcState, frameTime);
+					updateEnemy(rcState); 
+					render(sdlState, rcState);
+					renderEnemy(sdlState->renderer, rcState);
 
-                cleanupRaycaster(rcState);
-                break;
-            }
-            case 1: // Options
-                // Implement options menu here
-                break;
-            case 2: // Quit
-            case -1: // SDL_QUIT event
-                gameRunning = false;
-                break;
-        }
-    }
+					frameTime = SDL_GetTicks() - frameStart;
+					if (frameTime < FRAME_TARGET_TIME)
+					{
+						SDL_Delay((int)(FRAME_TARGET_TIME - frameTime));
+					}
+//					double deltaTime = (SDL_GetTicks() - frameStart) / 1000.0;
+				}
 
-    cleanupSDL(sdlState);
-    return 0;
+				cleanupRaycaster(rcState);
+				break;
+			}
+			case 1:
+				/*TODO:*Implement options menu here*/
+				break;
+			case 2:
+			case -1:
+				gameRunning = false;
+				break;
+		}
+	}
+
+	cleanupSDL(sdlState);
+	return 0;
 }

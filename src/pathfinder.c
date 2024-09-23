@@ -63,99 +63,105 @@ Node pop(PriorityQueue *pq)
 	}
 
 	return root;
-}
-
-void enemyPathFinding(RaycasterState* state, Enemy enemy, double playerX, double playerY)
+}void enemyPathFinding(RaycasterState* state, __attribute__((unused))Enemy enemy, double playerX, double playerY)
 {
-	 static int updateCounter = 0;
-    if (++updateCounter % 10 != 0) {
-        // Simple direct movement towards player when not updating full path
-        double dx = playerX - state->boss.posX;
-        double dy = playerY - state->boss.posY;
-        double length = sqrt(dx * dx + dy * dy);
-        if (length > 0) {
-            double moveSpeed = 0.05;
-            double newX = state->boss.posX + (dx / length) * moveSpeed;
-            double newY = state->boss.posY + (dy / length) * moveSpeed;
-            
-            // Simple collision detection
-            if (isValidCell(state, (int)newX, (int)newY)) {
-                state->boss.posX = newX;
-                state->boss.posY = newY;
+    static int updateCounter = 0;
+    static double targetX = -1, targetY = -1;
+    double moveSpeed = 0.03; // Adjusted for smoother movement
+
+    // Update path less frequently
+    if (++updateCounter % 30 == 0 || (targetX == -1 && targetY == -1)) {
+        // Full path calculation
+        PriorityQueue openSet;
+        initPriorityQueue(&openSet, MAP_WIDTH * MAP_HEIGHT);
+
+        bool closedSet[MAP_WIDTH][MAP_HEIGHT] = {false};
+        Node nodes[MAP_WIDTH][MAP_HEIGHT] = {0};
+
+        int startX = (int)state->boss.posX;
+        int startY = (int)state->boss.posY;
+        int endX = (int)playerX;
+        int endY = (int)playerY;
+
+        nodes[startX][startY].x = startX;
+        nodes[startX][startY].y = startY;
+        nodes[startX][startY].g = 0;
+        nodes[startX][startY].h = heuristic(startX, startY, endX, endY);
+        nodes[startX][startY].f = nodes[startX][startY].g + nodes[startX][startY].h;
+
+        push(&openSet, nodes[startX][startY]);
+
+        int dx[] = {-1, 0, 1, 0};
+        int dy[] = {0, 1, 0, -1};
+
+        while (!isEmpty(&openSet)) {
+            Node current = pop(&openSet);
+
+            if (current.x == endX && current.y == endY) {
+                // Path found, reconstruct and set next target
+                int path[MAX_PATH_LENGTH][2];
+                int pathLength = 0;
+                reconstructPath(&nodes[current.x][current.y], path, &pathLength);
+
+                if (pathLength > 1) {
+                    targetX = path[pathLength - 2][0];
+                    targetY = path[pathLength - 2][1];
+                }
+                break;
             }
-        }
-        return;
-    }
-    PriorityQueue openSet;
-    initPriorityQueue(&openSet, MAP_WIDTH * MAP_HEIGHT);
 
-    bool closedSet[MAP_WIDTH][MAP_HEIGHT] = {false};
-    Node nodes[MAP_WIDTH][MAP_HEIGHT] = {0};
+            closedSet[current.x][current.y] = true;
 
-    int startX = (int)state->boss.posX;
-    int startY = (int)state->boss.posY;
-    int endX = (int)playerX;
-    int endY = (int)playerY;
+            for (int i = 0; i < 4; i++) {
+                int newX = current.x + dx[i];
+                int newY = current.y + dy[i];
 
-    nodes[startX][startY].x = startX;
-    nodes[startX][startY].y = startY;
-    nodes[startX][startY].g = 0;
-    nodes[startX][startY].h = heuristic(startX, startY, endX, endY);
-    nodes[startX][startY].f = nodes[startX][startY].g + nodes[startX][startY].h;
+                if (!isValidCell(state, newX, newY) || closedSet[newX][newY]) {
+                    continue;
+                }
 
-    push(&openSet, nodes[startX][startY]);
+                double tentativeG = nodes[current.x][current.y].g + 1.0;
 
-    int dx[] = {-1, 0, 1, 0};
-    int dy[] = {0, 1, 0, -1};
+                if (tentativeG < nodes[newX][newY].g || nodes[newX][newY].g == 0) {
+                    nodes[newX][newY].parent = (struct node*)&nodes[current.x][current.y];
+                    nodes[newX][newY].g = tentativeG;
+                    nodes[newX][newY].h = heuristic(newX, newY, endX, endY);
+                    nodes[newX][newY].f = nodes[newX][newY].g + nodes[newX][newY].h;
+                    nodes[newX][newY].x = newX;
+                    nodes[newX][newY].y = newY;
 
-    while (!isEmpty(&openSet)) {
-        Node current = pop(&openSet);
-
-        if (current.x == endX && current.y == endY) {
-            /* Path found, reconstruct and move enemy */
-            int path[MAX_PATH_LENGTH][2];
-            int pathLength = 0;
-            reconstructPath(&nodes[current.x][current.y], path, &pathLength);
-
-            if (pathLength > 1) {
-                /* Move enemy towards the next point in the path */
-                double moveX = path[pathLength - 2][0] - state->boss.posX;
-                double moveY = path[pathLength - 2][1] - state->boss.posY;
-                double length = sqrt(moveX * moveX + moveY * moveY);
-
-                if (length > 0) {
-                    double moveSpeed = 0.05; // Adjust this value to change enemy speed
-                    state->boss.posX += (moveX / length) * moveSpeed;
-                    state->boss.posY += (moveY / length) * moveSpeed;
-		   // printf("Enemy position: %f, %f\n", state->boss.posX, state->boss.posY);
+                    push(&openSet, nodes[newX][newY]);
                 }
             }
-            return;
         }
-	 closedSet[current.x][current.y] = true;
+    }
 
-        for (int i = 0; i < 4; i++) {
-            int newX = current.x + dx[i];
-            int newY = current.y + dy[i];
+    // Move towards the current target point
+    if (targetX != -1 && targetY != -1) {
+        double dx = targetX - state->boss.posX;
+        double dy = targetY - state->boss.posY;
+        double distance = sqrt(dx * dx + dy * dy);
 
-            if (!isValidCell(state, newX, newY) || closedSet[newX][newY]) {
-		    state->boss.posX = newX;
-		    state->boss.posY = newY;
-            }
+        double newPosX = state->boss.posX;
+        double newPosY = state->boss.posY;
 
-            double tentativeG = nodes[current.x][current.y].g + 1.0;
-
-            if (tentativeG < nodes[newX][newY].g || nodes[newX][newY].g == 0) {
-                nodes[newX][newY].parent = (struct node*)&nodes[current.x][current.y];
-                nodes[newX][newY].g = tentativeG;
-                nodes[newX][newY].h = heuristic(newX, newY, endX, endY);
-               nodes[newX][newY].f = nodes[newX][newY].g + nodes[newX][newY].h;
-                nodes[newX][newY].x = newX;
-                nodes[newX][newY].y = newY;
-
-                push(&openSet, nodes[newX][newY]);
-            }
+        if (distance > moveSpeed) {
+            newPosX += (dx / distance) * moveSpeed;
+            newPosY += (dy / distance) * moveSpeed;
+        } else {
+            // Reached the target point, clear it
+            newPosX = targetX;
+            newPosY = targetY;
+            targetX = -1;
+            targetY = -1;
         }
+
+        // Simple collision detection
+        if (isValidCell(state, (int)newPosX, (int)newPosY)) {
+            state->boss.posX = newPosX;
+            state->boss.posY = newPosY;
+        }
+        // If collision occurs, we simply don't update the position
     }
 }
 

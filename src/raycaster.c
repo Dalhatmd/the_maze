@@ -49,7 +49,7 @@ static void performDDA(RaycasterState* state, double rayDirX, double rayDirY, in
 			sideDistY += deltaDistY;
 			*mapY += stepY;
 			*side = 1;
-		}
+	}
 		if (state->map[*mapX][*mapY] > 0) hit = 1;
 	}
 
@@ -65,7 +65,7 @@ static void performDDA(RaycasterState* state, double rayDirX, double rayDirY, in
  * @param perpWallDist: The perpendicular distance from the player to the wall
  * @param side: The side of the wall hit (0 for x, 1 for y)
  */
-static void drawWallToBuffer(int x, double perpWallDist, int side, RaycasterState* rcState, double rayDirX, double rayDirY, int mapX, int mapY)
+void drawWallToBuffer(int x, double perpWallDist, int side, RaycasterState* rcState, double rayDirX, double rayDirY, int mapX, int mapY)
 {
 	int lineHeight = (int)(SCREEN_HEIGHT / perpWallDist);
 	int drawStart = -lineHeight / 2 + SCREEN_HEIGHT / 2;
@@ -116,7 +116,7 @@ void render(SDLState* sdlState, RaycasterState* rcState)
 
 	memset(rcState->pixelBuffer, 0, SCREEN_WIDTH * SCREEN_HEIGHT * sizeof(Uint32));
 
-	drawFloorAndCeiling(sdlState->renderer, rcState);
+	drawFloorAndCeiling(rcState);
 	for (int x = 0; x < SCREEN_WIDTH; x++) {
 		double rayDirX, rayDirY;
 		calculateRayPosition(x, rcState, &rayDirX, &rayDirY);
@@ -140,8 +140,8 @@ void render(SDLState* sdlState, RaycasterState* rcState)
 	SDL_DestroyTexture(texture);
 	// Render the enemy and gun after walls
 	renderEnemy(sdlState->renderer, rcState);
-	handleShooting(rcState);
-	renderGun(sdlState->renderer, rcState);
+//	handleShooting(rcState);
+//	renderGun(sdlState->renderer, rcState);
 
 	if (rcState->toggleMap)
 		drawMiniMap(sdlState->renderer, rcState);

@@ -21,7 +21,7 @@ RaycasterState* parseMapFile(const char *filename, SDLState *sdlState)
 		printf("Error: Could not open file %s\n", filename);
 		return NULL;
 	}
-	RaycasterState *state = calloc(1, sizeof(RaycasterState));
+	RaycasterState *state = malloc(sizeof(RaycasterState));
 	if (!state)
 	{
 		printf("Error: Could not allocate memory for RaycasterState\n");

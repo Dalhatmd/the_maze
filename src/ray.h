@@ -63,6 +63,8 @@ typedef struct
 	int damage;
 	double fireRate;
 	double lastFireTime;
+	int currentFrame;
+	double animationStartTime;
 } Gun;
 
 typedef struct {
@@ -105,11 +107,12 @@ typedef struct {
    
 } SDLState;
 
+void load_weapons(RaycasterState *state, const char *file);
 void cleanUpMenu(MenuItem *menuItems, int count, TTF_Font *font);
 int showMenu(SDL_Renderer *renderer);
 
-void drawFloorAndCeiling(SDL_Renderer *renderer, RaycasterState *rcstate);
-static void drawWallToBuffer(int x, double perpWallDist, int side, RaycasterState *rcState, double rayDirX, double rayDirY, int mapX, int mapY);
+void drawFloorAndCeiling(RaycasterState *rcstate);
+void drawWallToBuffer(int x, double perpWallDist, int side, RaycasterState *rcState, double rayDirX, double rayDirY, int mapX, int mapY);
 void initEnemy(RaycasterState *state);
 void renderEnemy(SDL_Renderer *renderer, RaycasterState *state);
 SDLState* initSDL(void);

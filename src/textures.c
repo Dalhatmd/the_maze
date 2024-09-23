@@ -21,7 +21,7 @@ void textures_init(RaycasterState *rcState)
 		"textures/mossy.png",
 		"textures/wood.png",
 		"textures/colorstone.png",
-		"textures/boss.png"
+		"textures/barrel.png"
 	};
 
 	for (i = 0; i < NUM_TEXTURES; i++)
