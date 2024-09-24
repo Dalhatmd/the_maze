@@ -41,7 +41,6 @@ int main(int argc, char *argv[])
 
 				initEnemy(rcState);
 				textures_init(rcState);
-//				initGuns(rcState);
 
 				int running = 1;
 

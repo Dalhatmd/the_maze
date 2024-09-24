@@ -128,6 +128,6 @@ RaycasterState* parseMapFile(const char *filename, SDLState *sdlState);
 void drawFloor(SDL_Renderer *renderer, RaycasterState *state);
 void drawCeiling(SDL_Renderer *renderer, RaycasterState *state);
 void initGuns(RaycasterState *state);
-void renderGun(SDL_Renderer *renderer, RaycasterState *state);
+void renderGun(SDL_Renderer *renderer, RaycasterState *rcState);
 void handleShooting(RaycasterState *state);
 #endif // RAYCASTER_H
