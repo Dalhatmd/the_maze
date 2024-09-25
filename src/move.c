@@ -77,31 +77,37 @@ void updatePosition(RaycasterState *state, double deltaTime)
     speedMultiplier = 0.005;
     moveSpeed = MOVE_SPEED * deltaTime * speedMultiplier;
     rotSpeed = ROTATE_SPEED * deltaTime * speedMultiplier;
+    double moveX = 0;
+    double moveY = 0;
 
     // Forward and backward movement
-    if(state->moveForward || state->moveBackward)
+	if (state->moveForward || state->moveBackward)
     {
         double moveDir = state->moveForward ? 1 : -1;
-        if(state->map[(int)(state->posX + state->dirX * moveSpeed * moveDir)][(int)state->posY] == 0)
-            state->posX += state->dirX * moveSpeed * moveDir;
-        if(state->map[(int)state->posX][(int)(state->posY + state->dirY * moveSpeed * moveDir)] == 0)
-            state->posY += state->dirY * moveSpeed * moveDir;
+        moveX += state->dirX * moveDir;
+        moveY += state->dirY * moveDir;
     }
-
-    // Strafing movement
-    if(state->strafeLeft || state->strafeRight)
+    if (state->strafeLeft || state->strafeRight)
     {
         double strafeDir = state->strafeRight ? 1 : -1;
-        double strafeDirX = state->dirY * strafeDir;
-        double strafeDirY = -state->dirX * strafeDir;
-        
-        if(state->map[(int)(state->posX + strafeDirX * moveSpeed)][(int)state->posY] == 0)
-            state->posX += strafeDirX * moveSpeed;
-        if(state->map[(int)state->posX][(int)(state->posY + strafeDirY * moveSpeed)] == 0)
-            state->posY += strafeDirY * moveSpeed;
+        moveX += state->dirY * strafeDir;
+        moveY += -state->dirX * strafeDir;
     }
 
-    // Rotation
+    // Normalize movement vector if moving diagonally
+    if (moveX != 0 && moveY != 0)
+    {
+        double length = sqrt(moveX * moveX + moveY * moveY);
+        moveX /= length;
+        moveY /= length;
+    }
+
+    // Apply movement
+    if (state->map[(int)(state->posX + moveX * moveSpeed)][(int)state->posY] == 0)
+        state->posX += moveX * moveSpeed;
+    if (state->map[(int)state->posX][(int)(state->posY + moveY * moveSpeed)] == 0)
+        state->posY += moveY * moveSpeed;
+       // Rotation
     if(state->rotateLeft || state->rotateRight)
     {
         double rotDir = state->rotateLeft ? 1 : -1;

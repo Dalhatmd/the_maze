@@ -142,7 +142,7 @@ void render(SDLState* sdlState, RaycasterState* rcState)
 	// Render the enemy and gun after walls
 	renderEnemy(sdlState->renderer, rcState);
 //	handleShooting(rcState);
-	renderGun(sdlState->renderer);
+//	renderGun(sdlState->renderer);
 	handleShooting(rcState);
 	renderBullets(sdlState->renderer, rcState);
 	moveBullets(rcState, deltaTime);
