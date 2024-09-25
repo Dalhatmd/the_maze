@@ -6,7 +6,7 @@
  * @raydirX: X coordinate of ray
  * @raydirY: Y coordinate of ray
  */
-static void calculateRayPosition(int x, RaycasterState* state, double* rayDirX, double* rayDirY)
+void calculateRayPosition(int x, RaycasterState* state, double* rayDirX, double* rayDirY)
 {
 	double cameraX = 2 * x / (double)SCREEN_WIDTH - 1;
 	*rayDirX = state->dirX + state->planeX * cameraX;
@@ -113,6 +113,7 @@ void drawWallToBuffer(int x, double perpWallDist, int side, RaycasterState* rcSt
  */
 void render(SDLState* sdlState, RaycasterState* rcState)
 {
+	double deltaTime = 1.0 / 60.0;
 
 	memset(rcState->pixelBuffer, 0, SCREEN_WIDTH * SCREEN_HEIGHT * sizeof(Uint32));
 
@@ -141,10 +142,13 @@ void render(SDLState* sdlState, RaycasterState* rcState)
 	// Render the enemy and gun after walls
 	renderEnemy(sdlState->renderer, rcState);
 //	handleShooting(rcState);
-	renderGun(sdlState->renderer, rcState);
+	renderGun(sdlState->renderer);
+	handleShooting(rcState);
+	renderBullets(sdlState->renderer, rcState);
+	moveBullets(rcState, deltaTime);
 
+	
 	if (rcState->toggleMap)
 		drawMiniMap(sdlState->renderer, rcState);
-
 	SDL_RenderPresent(sdlState->renderer);
 }

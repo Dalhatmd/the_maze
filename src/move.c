@@ -32,6 +32,9 @@ void handleInput(SDL_Event *event, RaycasterState *state)
 		case SDLK_m:
 			state->toggleMap = !state->toggleMap;
 			break;
+		case SDLK_SPACE:
+			state->isShooting = true;
+			break;
 		}
 	}
 	else if (event->type == SDL_KEYUP)
@@ -55,6 +58,9 @@ void handleInput(SDL_Event *event, RaycasterState *state)
 			break;
 		case SDLK_RIGHT:
 			state->rotateRight = false;
+			break;
+		case SDLK_SPACE:
+			state->isShooting = false;
 			break;
 		}
 	}

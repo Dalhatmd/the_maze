@@ -14,7 +14,7 @@ Controls
 
 How to Run
 
-To run the game, you need to have GCC and SDL2 installed on your system. Follow the steps below to compile and run the game:
+To run the game, you need to have GCC, SDL2 SDL2 IMAGE AND SDL2 TTF installed on your system. Follow the steps below to compile and run the game:
 
 Clone the repository or download the source files.
 
@@ -25,13 +25,13 @@ Open a terminal and navigate to the src directory.
 Compile the game with the following command:
 
 
-    gcc *.c -lm -lSDL2 -lSDL2_image -o raycasting_game
+    make
 
 Run the compiled game:
 
 bash
 
-    ./raycasting_game map.txt
+    ./game map.txt
 
 License
 

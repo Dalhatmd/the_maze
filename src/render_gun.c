@@ -1,5 +1,5 @@
 #include "ray.h"
-void renderGun(SDL_Renderer *renderer, RaycasterState *rcState)
+void renderGun(SDL_Renderer *renderer)
 {
 	int gunWidth = 50;
 	int gunHeight = 100;

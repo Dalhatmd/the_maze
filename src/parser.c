@@ -34,6 +34,7 @@ RaycasterState* parseMapFile(const char *filename, SDLState *sdlState)
 	state->boss.posY = -1;
 	state->boss.isAlive = false;
 	state->boss.textureId = -1;
+	state->numBullets = 0;
 	while (fgets(line, sizeof(line), file) && row < MAP_HEIGHT)
 	{
 		col = 0;
@@ -86,7 +87,10 @@ RaycasterState* parseMapFile(const char *filename, SDLState *sdlState)
 	// Initialize the floor and ceiling texture
 	state->floorCeilingTexture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STREAMING, SCREEN_WIDTH, SCREEN_HEIGHT);
 
-
+	for (int i = 0; i < MAX_BULLETS; i++)
+	{
+		state->bullets[i].active = false;
+	}
 	// Validate map dimensions
 	if (row != MAP_HEIGHT || max_width != MAP_WIDTH) {
 		fprintf(stderr, "Invalid map dimensions. Expected %dx%d, got %dx%d\n", 
